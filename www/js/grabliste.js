@@ -308,6 +308,8 @@ function get_url_param( name ){
 
  
  function showGrablist(values) {
+	 var limit = 1000;
+	 
 	  where = "1=1 ";
 	  searchcriteria = "";
 	  for(key in values) {
@@ -326,31 +328,35 @@ function get_url_param( name ){
         	 
         	 tx.executeSql('select count(*) from ol_ghaupt_small where '+where,[],function(tx,rs) {
         		 count = rs.rows.item(0)['count(*)'];
-            	 $("#searchcriteria").append("<b>"+count+" Graeber gefunden </b>");
+            	 $("#searchcriteria").append("<b>"+count+" Gräber</b><br/>");
+            	 if (count > limit) {
+            		 $("#searchcriteria").append("<b class='error'>Zu viele Gräber - es werden nur "+limit+" angezeigt. Schränken Sie möglichst die Suchkriterien ein</b>");
+            	 }
+            		 
+            	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, gtext, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where+" LIMIT "+limit,[],function(tx,rs) {
+            	  	var i = 0;
+                  	for (i=0; i < rs.rows.length; i++) {
+                    	 gtext = is_not_null(rs.rows.item(i)['gtext']) ? rs.rows.item(i)['gtext'] : '';
+                     	abteil = is_not_null(rs.rows.item(i)['abteil']) ? rs.rows.item(i)['abteil'] : '';
+                     	reihe = is_not_null(rs.rows.item(i)['reihe']) ? rs.rows.item(i)['reihe'] : '';
+                     	stelle = is_not_null(rs.rows.item(i)['stelle']) ? rs.rows.item(i)['stelle'] : '';
+                     	kindex = rs.rows.item(i)['kindex'];
+                     	gmzustand =  is_not_null(rs.rows.item(i)['gmzustand']) ? gm_mandantvalues[rs.rows.item(i)['gmzustand']] : "In Ordnung";
+                     	pfzustand =  is_not_null(rs.rows.item(i)['pfzustand']) ? pf_mandantvalues[rs.rows.item(i)['pfzustand']] : "In Ordnung";
+                     	content = '<b>'+gtext+'</b><br/>';
+                     	content += '<div class="grabliste">'+abteil+'|'+reihe+'|'+stelle+'</div>';
+                     	content += '<div class="grabliste">'+gmzustand+'</div>';
+                     	content += '<div class="grabliste">'+pfzustand+'</div>';
+                     	content = "<div onclick='showSingleGrave("+kindex+")'>"+content+"</div>";
+                     	$('#table').append('<tr class="grabliste_row" ><td class="grabliste_feld">'+content+'</td></tr>');
+                  	}
+                  	$("#proceed").html('<input id="back" class="text button" type="button" value="zurück" onclick="loadStartPage()"  />');
+	                 
+             	},sql_error);
+            	 
         	 },sql_error);
-             
-               tx.executeSql('select ol_ghaupt_small.kindex as kindex, gtext, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where,[],function(tx,rs) {
-            	  var i = 0;
-                  for (i=0; i < rs.rows.length; i++) {
-                     gtext = is_not_null(rs.rows.item(i)['gtext']) ? rs.rows.item(i)['gtext'] : '';
-                     abteil = is_not_null(rs.rows.item(i)['abteil']) ? rs.rows.item(i)['abteil'] : '';
-                     reihe = is_not_null(rs.rows.item(i)['reihe']) ? rs.rows.item(i)['reihe'] : '';
-                     stelle = is_not_null(rs.rows.item(i)['stelle']) ? rs.rows.item(i)['stelle'] : '';
-                     kindex = rs.rows.item(i)['kindex'];
-                     gmzustand =  is_not_null(rs.rows.item(i)['gmzustand']) ? gm_mandantvalues[rs.rows.item(i)['gmzustand']] : "In Ordnung";
-                     pfzustand =  is_not_null(rs.rows.item(i)['pfzustand']) ? pf_mandantvalues[rs.rows.item(i)['pfzustand']] : "In Ordnung";
-                     content = '<b>'+gtext+'</b><br/>';
-                     content += '<div class="grabliste">'+abteil+'|'+reihe+'|'+stelle+'</div>';
-                     content += '<div class="grabliste">'+gmzustand+'</div>';
-                     content += '<div class="grabliste">'+pfzustand+'</div>';
-                     content = "<div onclick='showSingleGrave("+kindex+")'>"+content+"</div>";
-                     $('#table').append('<tr class="grabliste_row" ><td class="grabliste_feld">'+content+'</td></tr>');
-                  }
-                  $("#proceed").html('<input id="back" class="text button" type="button" value="zurück" onclick="loadStartPage()"  />');
-                 
-             },sql_error);
-             
-         },sql_error);
+              
+         });
          
          
      });

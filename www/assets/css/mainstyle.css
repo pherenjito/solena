@@ -58,6 +58,9 @@ select,input {
     float: right;
 }
 
+.error {
+    color: #FF0000;
+}
 
 
 
