@@ -465,7 +465,9 @@ function get_url_param( name ){
                tx.executeSql('select kindex, gmzustand, pfzustand, gmdatum, pfdatum from ol_gmangel where ischanged=1',[],function(tx,rs) {
                   var i = 0;
                   for (i=0; i < rs.rows.length; i++) {
-                    zustand = [rs.rows.item(i)['kindex'],rs.rows.item(i)['gmzustand'],rs.rows.item(i)['pfzustand'],rs.rows.item(i)['gmdatum'],rs.rows.item(i)['pfdatum']];
+                	var gmdatum = is_not_null(rs.rows.item(i)['gmdatum']) ? rs.rows.item(i)['gmdatum'] : '';
+                	var pfdatum = is_not_null(rs.rows.item(i)['pfdatum']) ? rs.rows.item(i)['pfdatum'] : '';
+                    zustand = [rs.rows.item(i)['kindex'],rs.rows.item(i)['gmzustand'],rs.rows.item(i)['pfzustand'],gmdatum,pfdatum];
                     zustaende.push(zustand);
                   }
                   
