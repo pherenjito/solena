@@ -323,11 +323,14 @@ function get_url_param( name ){
 		 $("#searchcriteria").append(searchcriteria);
          var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
          db.transaction(function(tx) {
+        	 
+        	 tx.executeSql('select count(*) from ol_ghaupt_small where '+where,[],function(tx,rs) {
+        		 count = rs.rows.item(0)['count(*)'];
+            	 $("#searchcriteria").append("<b>"+count+" Graeber gefunden </b>");
+        	 },sql_error);
              
                tx.executeSql('select ol_ghaupt_small.kindex as kindex, gtext, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where,[],function(tx,rs) {
             	  var i = 0;
-            	  var nr = rs.rows.length;
-            	  $("#searchcriteria").append("<b>"+nr+" Gräber gefunden </b>");
                   for (i=0; i < rs.rows.length; i++) {
                      gtext = is_not_null(rs.rows.item(i)['gtext']) ? rs.rows.item(i)['gtext'] : '';
                      abteil = is_not_null(rs.rows.item(i)['abteil']) ? rs.rows.item(i)['abteil'] : '';
