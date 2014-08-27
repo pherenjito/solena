@@ -383,7 +383,7 @@ function get_url_param( name ){
             		abt = 'Abt:'+(is_not_null(rs.rows.item(0)['abteil']) ?  rs.rows.item(0)['abteil'] : '')+"|";
             		rei = 'Reihe:'+(is_not_null(rs.rows.item(0)['reihe']) ?  rs.rows.item(0)['reihe'] : '')+"|";
             		ste = 'Stelle:'+(is_not_null(rs.rows.item(0)['stelle']) ? rs.rows.item(0)['stelle'] : ''); 
-            		gra = "Grabname:"+(is_not_null(rs.rows.item(0)['gtext']) ?  rs.rows.item(0)['gtext'] : '');
+            		gra = "Grabart:"+(is_not_null(rs.rows.item(0)['gtext']) ?  rs.rows.item(0)['gtext'] : '');
             		gmzustand = rs.rows.item(0)['gmzustand'];
             		pfzustand = rs.rows.item(0)['pfzustand'];
             		$("#header").append(fri+"<br/>");
