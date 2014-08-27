@@ -1,3 +1,4 @@
+
 select {
     width: 100%;
 }
@@ -10,11 +11,12 @@ select {
 .grabliste {
     width:33%;
     float:left;
+    text-align:center;
 }
 
 .grabliste_feld {
     width:100%;
-    background-color: #9d9d9d;
+    background-color: #BBBBBB;
     border: 1px solid black;
     height: 120px;
 }
@@ -115,7 +117,7 @@ select,input {
   animation: bouncedelay 1.2s infinite ease-in-out;
   /* Prevent first frame from flickering when animation starts */
   -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
+   animation-fill-mode: both; 
 }
 
 .spinner .spinner-container {

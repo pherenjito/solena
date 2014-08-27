@@ -242,6 +242,11 @@ function get_url_param( name ){
     	});
 
      }
+     
+     function resetMainList() {
+		 selectGraveValues = {};
+    	 loadStartPage();
+     }
   
  function loadStartPage(){
      
@@ -372,14 +377,16 @@ function get_url_param( name ){
 		     var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
 		     
              db.transaction(function(tx) {
-            	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, gtext, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where,[],function(tx,rs) {
+            	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, gtext, friedhof, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where,[],function(tx,rs) {
             	   
-            		abt = 'Abt:'+(is_not_null(rs.rows.item(0)['abteil']) ?  rs.rows.item(0)['abteil'] : '');
-            		rei = 'Reihe:'+(is_not_null(rs.rows.item(0)['reihe']) ?  rs.rows.item(0)['reihe'] : '');
+            		fri = '<b>Friedhof:'+(is_not_null(rs.rows.item(0)['friedhof']) ?  rs.rows.item(0)['friedhof'] : '')+"</b>";
+            		abt = 'Abt:'+(is_not_null(rs.rows.item(0)['abteil']) ?  rs.rows.item(0)['abteil'] : '')+"|";
+            		rei = 'Reihe:'+(is_not_null(rs.rows.item(0)['reihe']) ?  rs.rows.item(0)['reihe'] : '')+"|";
             		ste = 'Stelle:'+(is_not_null(rs.rows.item(0)['stelle']) ? rs.rows.item(0)['stelle'] : ''); 
             		gra = "Grabname:"+(is_not_null(rs.rows.item(0)['gtext']) ?  rs.rows.item(0)['gtext'] : '');
             		gmzustand = rs.rows.item(0)['gmzustand'];
             		pfzustand = rs.rows.item(0)['pfzustand'];
+            		$("#header").append(fri+"<br/>");
             		$("#header").append(abt+rei+ste+"<br/>");
             		$("#header").append(gra);
             		$("#kindex").val( rs.rows.item(0)['kindex']);            		
