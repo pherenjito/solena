@@ -1,0 +1,60 @@
+select {
+    width: 100%;
+}
+
+.grablist_table {
+    
+    border-spacing: 10px 30px;
+}
+
+.grabliste {
+    width:33%;
+    float:left;
+}
+
+.grabliste_feld {
+    width:100%;
+    background-color: #9d9d9d;
+    border: 1px solid black;
+    height: 120px;
+}
+
+.text {
+    font-size: 34px;
+}
+
+.button {
+    margin-top: 20px;
+}
+
+h1 {
+    font-size: 38px;
+}
+
+
+
+table {
+    width: 100%;
+}
+
+td {
+    font-family: "Comic Sans MS";
+    font-size: 18px;
+}
+
+
+select,input {
+    height: 70px;
+    font-size: 34px;
+    width:100%;
+}
+
+
+.smallpic {
+    width: 100px;
+}
+
+.upright {
+    float: right;
+}
+
