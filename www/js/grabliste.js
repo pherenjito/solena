@@ -298,6 +298,14 @@ function get_url_param( name ){
         
     }
  
+ function getFullName(str) {
+	 if(str=='abteil')
+		 return 'Abteilung';
+	 if (str=='gtext')
+		 return 'Grabart';
+	 else
+		return str.charAt(0).toUpperCase() + str.slice(1);
+ }
 
  
  function showGrablist(values) {
@@ -306,19 +314,21 @@ function get_url_param( name ){
 	  for(key in values) {
 		 if (values[key].length) {
 			where += "AND "+key+"='"+values[key]+"' ";
-			searchcriteria += key +"="+values[key]+"<br/>";
+			searchcriteria += getFullName(key)+"="+values[key]+"<br/>";
 		 }
 		 
 	  }
 	  $("#content").load("grablist.html", function() {
 		
-		 $("#back").attr("value","Laden..."); 
+		 $("#proceed").load("spinner.html"); 
 		 $("#searchcriteria").append(searchcriteria);
          var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
          db.transaction(function(tx) {
              
                tx.executeSql('select ol_ghaupt_small.kindex as kindex, gtext, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where,[],function(tx,rs) {
             	  var i = 0;
+            	  var nr = rs.rows.length;
+            	  $("#searchcriteria").append("<b>"+nr+" Gräber gefunden </b>");
                   for (i=0; i < rs.rows.length; i++) {
                      gtext = is_not_null(rs.rows.item(i)['gtext']) ? rs.rows.item(i)['gtext'] : '';
                      abteil = is_not_null(rs.rows.item(i)['abteil']) ? rs.rows.item(i)['abteil'] : '';
@@ -334,14 +344,12 @@ function get_url_param( name ){
                      content = "<div onclick='showSingleGrave("+kindex+")'>"+content+"</div>";
                      $('#table').append('<tr class="grabliste_row" ><td class="grabliste_feld">'+content+'</td></tr>');
                   }
+                  $("#proceed").html('<input id="back" class="text button" type="button" value="zurück" onclick="loadStartPage()"  />');
                  
              },sql_error);
              
          },sql_error);
-         $("#back").attr("value","zurück");
-		 $("#back").click(function(){
-			 loadStartPage();
-		 });
+         
          
      });
  
