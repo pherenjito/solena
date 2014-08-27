@@ -31,109 +31,108 @@ function get_url_param( name ){
   var url;
   
 
+ function create_ol_ghaupt_small() {
+	 
+	 var db = window.sqlitePlugin.openDatabase({name: "grabliste"}); 
+	 $.get(url, {ol_ghaupt : 1, mandant_id : mandant_id }, function(obj){
+		var ghvalues = new Array();
+     	var i = 0;        
+     	for(i = 0; i < (obj.length-1); i++) {
+        	var val = '('+obj[i]['kindex']+",'"+obj[i]['friedhof']+"','"+obj[i]['abteil']+"','"+obj[i]['reihe']+"','"+obj[i]['stelle']+"','"+obj[i]['gtext']+"')";
+         	ghvalues.push(val);
+     	}
+     	db.transaction(function(tx) {
+     		tx.executeSql("Drop table if exists ol_ghaupt_small",[],function(tx,rs) {
+            	tx.executeSql('CREATE TABLE IF NOT EXISTS ol_ghaupt_small (kindex integer primary key, friedhof text, abteil text, reihe text, stelle text, gtext text)',[],function(tx,rs){
+                	var i = 0;
+                	for(i=0;i<(ghvalues.length);i++) {
+                    	var val = ghvalues[i];
+                    	tx.executeSql("insert into ol_ghaupt_small values "+val);
+                	}
+                	alert("Tabelle ol_ghaupt_small erfolgreich synchronisiert");    
+                    create_ol_gmangel();
+            	},sql_error);
+         	},sql_error);
+     	});
+		 
+	 }, "json");
+ }
+ 
+  function create_ol_gmangel() {
+	 
+	 var db = window.sqlitePlugin.openDatabase({name: "grabliste"}); 
+	 $.get(url, {ol_gmangel : 1, mandant_id : mandant_id }, function(obj){
+		 
+		var gmvalues = new Array();
+     	var i = 0;        
+     	for(i = 0; i < (obj.length-1); i++) {
+        	gmzustand = is_not_null(obj[i]['gmzustand']) ? "'"+obj[i]['gmzustand']+"'" : "null";
+            pfzustand = is_not_null(obj[i]['pfzustand']) ? "'"+obj[i]['pfzustand']+"'" : "null";
+			gmdatum = is_not_null(obj[i]['gmdatum']) ? "'"+obj[i]['gmdatum']+"'" : "null";
+			pfdatum = is_not_null(obj[i]['pfdatum']) ? "'"+obj[i]['pfdatum']+"'" : "null";
+            
+         	var val = '('+obj[i]['kindex']+","+gmzustand+","+pfzustand+","+gmdatum+","+pfdatum+", 0)";
+         	gmvalues.push(val);
+     	}
+     	db.transaction(function(tx) {
+     		tx.executeSql("Drop table if exists ol_gmangel",[],function(tx,rs) {
+            	tx.executeSql('CREATE TABLE IF NOT EXISTS ol_gmangel (kindex integer primary key, gmzustand text, pfzustand text, gmdatum text, pfdatum text, ischanged integer)',[],function(tx,rs){
+                
+                	 var i = 0;
+                 	 for(i=0;i<(gmvalues.length);i++) {
+                    	var val = gmvalues[i];
+                    	tx.executeSql("insert into ol_gmangel values "+val);
+                 	  }
+         
+                 	alert("Tabelle ol_gmangel erfolgreich synchronisiert"); 
+                 	create_mandant_values();
+                
+            	},sql_error);
+         	});
+     		
+     	},sql_error);
+		 
+	 }, "json");
+ }
+  
+  function create_mandant_values() {
+	 
+	 var db = window.sqlitePlugin.openDatabase({name: "grabliste"}); 
+	 
+	 $.get(url, {mandant_values : 1, mandant_id : mandant_id }, function(obj){
+		var mandantvalues = new Array();
+     	var i = 0;        
+     	for(i = 0; i < (obj.length-1); i++) {
+        	 group = is_not_null(obj[i]['group_name']) ? "'"+obj[i]['group_name']+"'" : "null";
+             key =   is_not_null(obj[i]['value_name']) ? "'"+obj[i]['value_name']+"'" : "null";
+             value = is_not_null(obj[i]['value_text']) ? "'"+obj[i]['value_text']+"'" : "null";   
+         	 var val = '('+group+","+key+","+value+")";
+         	 mandantvalues.push(val);
+     	}
+     	db.transaction(function(tx) {
+     		tx.executeSql("Drop table if exists mandant_values",[],function(tx,rs) {
+            	tx.executeSql('CREATE TABLE IF NOT EXISTS mandant_values (mvgroup text, key text, value text)',[],function(tx,rs){
+                
+                	var i = 0;
+                	for(i=0;i<(mandantvalues.length);i++) {
+                    	var val = mandantvalues[i];
+                    	tx.executeSql("insert into mandant_values values "+val,[],function(tx,rs){},sql_error);
+                	}
+         
+                	alert("Tabelle mandant_values erfolgreich synchronisiert");
+					init();
+
+            	},sql_error);   
+         	},sql_error);
+     		
+     	});
+		 
+	 }, "json");
+ }
  
  function fillDatabase() {
 	 alert("Erzeuge neue Datenbank");
-
-     xmlhttp=new XMLHttpRequest();
-     xmlhttp.open("GET",url+"?ol_ghaupt=1&mandant_id="+mandant_id,false);
-     //xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-     xmlhttp.setRequestHeader("Content-Type", "text/xml; charset=UTF-8"); 
-     xmlhttp.send();
-     var json = xmlhttp.responseText;
-     var obj = $.parseJSON(json);
-     var ghvalues = new Array();
-     var i = 0;        
-     for(i = 0; i < (obj.length-1); i++) {
-         var val = '('+obj[i]['kindex']+",'"+obj[i]['friedhof']+"','"+obj[i]['abteil']+"','"+obj[i]['reihe']+"','"+obj[i]['stelle']+"','"+obj[i]['gtext']+"')";
-         ghvalues.push(val);
-     }
-     
-     xmlhttp=new XMLHttpRequest();
-     xmlhttp.open("GET",url+"?ol_gmangel=1&mandant_id="+mandant_id,false);
-     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-     xmlhttp.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
-     xmlhttp.send();
-     var json2 = xmlhttp.responseText;
-     var obj2 = $.parseJSON(json2);  
-     var gmvalues = new Array();
-     var j = 0;        
-     for(j = 0; j < (obj2.length-1); j++) {
-       
-             gmzustand = is_not_null(obj2[j]['gmzustand']) ? "'"+obj2[j]['gmzustand']+"'" : "null";
-             pfzustand = is_not_null(obj2[j]['pfzustand']) ? "'"+obj2[j]['pfzustand']+"'" : "null";
-         var val = '('+obj2[j]['kindex']+","+gmzustand+","+pfzustand+", 0)";
- 
-         gmvalues.push(val);
-     }
-     
-     xmlhttp=new XMLHttpRequest();
-     xmlhttp.open("GET",url+"?mandant_values=1&mandant_id="+mandant_id,false);
-     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-     xmlhttp.setRequestHeader("Content-Type", "text/xml; charset=UTF-8");
-     xmlhttp.send();
-     var json3 = xmlhttp.responseText;
-     var obj3 = $.parseJSON(json3);  
-     var mandantvalues = new Array();
-     var k = 0;
-     for(k = 0; k < (obj3.length-1); k++) {
-             group = is_not_null(obj3[k]['group_name']) ? "'"+obj3[k]['group_name']+"'" : "null";
-             key =   is_not_null(obj3[k]['value_name']) ? "'"+obj3[k]['value_name']+"'" : "null";
-             value = is_not_null(obj3[k]['value_text']) ? "'"+obj3[k]['value_text']+"'" : "null";   
-         var val = '('+group+","+key+","+value+")";
-         mandantvalues.push(val);
-     }
-           
-     var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
-     
-     alert("Schreibe Datensätze");
-     
-     db.transaction(function(tx) {
-     
-         tx.executeSql("Drop table if exists ol_ghaupt_small",[],function(tx,rs) {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS ol_ghaupt_small (kindex integer primary key, friedhof text, abteil text, reihe text, stelle text, gtext text)',[],function(tx,rs){
-                
-                var i = 0;
-                for(i=0;i<(ghvalues.length);i++) {
-                    var val = ghvalues[i];
-                    tx.executeSql("insert into ol_ghaupt_small values "+val);
-                }
-         
-                alert("Tabelle ol_ghaupt_small erfolgreich synchronisiert");    
-                
-            });
-         });
-         tx.executeSql("Drop table if exists ol_gmangel",[],function(tx,rs) {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS ol_gmangel (kindex integer primary key, gmzustand text, pfzustand text, ischanged integer)',[],function(tx,rs){
-                
-                 var i = 0;
-                 for(i=0;i<(gmvalues.length);i++) {
-                    var val = gmvalues[i];
-                    tx.executeSql("insert into ol_gmangel values "+val);
-                 }
-         
-                 alert("Tabelle ol_gmangel erfolgreich synchronisiert");  
-                
-            });
-         });
-         tx.executeSql("Drop table if exists mandant_values",[],function(tx,rs) {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS mandant_values (mvgroup text, key text, value text)',[],function(tx,rs){
-                
-                var i = 0;
-                for(i=0;i<(mandantvalues.length);i++) {
-                    var val = mandantvalues[i];
-                    tx.executeSql("insert into mandant_values values "+val,[],function(tx,rs){},sql_error);
-                }
-         
-                alert("Tabelle mandant_values erfolgreich synchronisiert");
-            },sql_error);   
-         },sql_error);
-     });
-     
-    
-     init();
-     
-     
+	 create_ol_ghaupt_small();
  }
  
  
@@ -419,10 +418,20 @@ function get_url_param( name ){
 
   
    function saveZustand(values) {
+	   	 var today = new Date();
+	   	 var tdString = "'"+today.toISOString().split("T")[0]+"'";
+	   	 var gmdatum = "null";
+	   	 var pfdatum = "null";
+	     if (is_not_null(values['gmzustand']))
+	    	 gmdatum = tdString;
+	     if (is_not_null(values['pfzustand']))
+	    	 pfdatum = tdString;
+	     
+		   
          var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
          db.transaction(function(tx) {
                            
-               tx.executeSql('replace into ol_gmangel (kindex,gmzustand,pfzustand, ischanged) values ('+values['kindex']+',"'+values['gmzustand']+'","'+values['pfzustand']+'", 1)',[],function(tx,rs) {
+               tx.executeSql('replace into ol_gmangel (kindex, gmzustand, pfzustand, gmdatum, pfdatum, ischanged) values ('+values['kindex']+',"'+values['gmzustand']+'","'+values['pfzustand']+'",'+gmdatum+','+pfdatum+', 1)',[],function(tx,rs) {
 
 					showGrablist(selectGraveValues); //
             	   		
@@ -438,7 +447,7 @@ function get_url_param( name ){
 	   zustand = zustaende[j];
 	   $.post(
 			url+"?setData=1&mandant_id="+mandant_id,
-			{ kindex : zustand[0], gmzustand : zustand[1], pfzustand : zustand[2]  },
+			{ kindex : zustand[0], gmzustand : zustand[1], pfzustand : zustand[2], gmdatum : zustand[3], pfdatum : zustand[4] },
 			function(data) {
 				writeAndConfirm(zustaende,j+1);
 			 },
@@ -453,10 +462,10 @@ function get_url_param( name ){
              
                zustaende = new Array();
               
-               tx.executeSql('select kindex, gmzustand, pfzustand from ol_gmangel where ischanged=1',[],function(tx,rs) {
+               tx.executeSql('select kindex, gmzustand, pfzustand, gmdatum, pfdatum from ol_gmangel where ischanged=1',[],function(tx,rs) {
                   var i = 0;
                   for (i=0; i < rs.rows.length; i++) {
-                    zustand = [rs.rows.item(i)['kindex'],rs.rows.item(i)['gmzustand'],rs.rows.item(i)['pfzustand']];
+                    zustand = [rs.rows.item(i)['kindex'],rs.rows.item(i)['gmzustand'],rs.rows.item(i)['pfzustand'],rs.rows.item(i)['gmdatum'],rs.rows.item(i)['pfdatum']];
                     zustaende.push(zustand);
                   }
                   
@@ -468,7 +477,7 @@ function get_url_param( name ){
 			  
               
              
-         	   });
+         	   },sql_error);
        
        
    		}); 
