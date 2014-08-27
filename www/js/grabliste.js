@@ -455,12 +455,14 @@ function get_url_param( name ){
 	    	 gmdatum = tdString;
 	     if (is_not_null(values['pfzustand']))
 	    	 pfdatum = tdString;
+	     gmstinfo = is_not_null(values['gmstinfo']) ? "'"+values['gmstinfo']+"'" : "null";
+	     zustinfo = is_not_null(values['zustinfo']) ? "'"+values['zustinfo']+"'" : "null";
 	     
 		   
          var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
          db.transaction(function(tx) {
                            
-               tx.executeSql('replace into ol_gmangel (kindex, gmzustand, pfzustand, gmdatum, pfdatum, gmstinfo, zustinfo, ischanged) values ('+values['kindex']+',"'+values['gmzustand']+'","'+values['pfzustand']+'",'+gmdatum+','+pfdatum+','+values['gmstinfo']+','+values['zustinfo']+', 1)',[],function(tx,rs) {
+               tx.executeSql('replace into ol_gmangel (kindex, gmzustand, pfzustand, gmdatum, pfdatum, gmstinfo, zustinfo, ischanged) values ('+values['kindex']+',"'+values['gmzustand']+'","'+values['pfzustand']+'",'+gmdatum+','+pfdatum+','+gmstinfo+','+zustinfo+', 1)',[],function(tx,rs) {
 
 					showGrablist(selectGraveValues); //
             	   		
@@ -471,17 +473,35 @@ function get_url_param( name ){
          
    }
    
+   function reset_ol_gmangel() {
+	     var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
+         db.transaction(function(tx) {
+        	   tx.executeSql("Update ol_gmangel set ischanged=0",[],function(txx,rs){
+				  alert("Update erfolgreich");	
+				},sql_error);
+         }
+   }
+   
    function  writeAndConfirm(zustaende,j) {
-	   if (j>=zustaende.length) return;
+	   if (j>=zustaende.length) {
+		   reset_ol_gmangel();
+		   return;
+	   }
 	   zustand = zustaende[j];
 	   $.post(
 			url+"?setData=1&mandant_id="+mandant_id,
 			{ kindex : zustand[0], gmzustand : zustand[1], pfzustand : zustand[2], gmdatum : zustand[3], pfdatum : zustand[4], gmstinfo : zustand[5], zustinfo : zustand[6] },
 			function(data) {
+				alert(data);
 				writeAndConfirm(zustaende,j+1);
 			 },
 		     "text");	
    }
+   
+   
+   
+   
+   
    
    function writeToServer() {
 	   
@@ -501,13 +521,7 @@ function get_url_param( name ){
                   }
                   
 			   writeAndConfirm(zustaende,0);
-		
-			   tx.executeSql("Update ol_gmangel set ischanged=0",[],function(txx,rs){
-				 //alert("Update erfolgreich");	
-				},sql_error);
-			  
-              
-             
+
          	   },sql_error);
        
        
