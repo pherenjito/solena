@@ -51,6 +51,11 @@ select,input {
     width:100%;
 }
 
+input[type=text]  {
+    background-color: hsl(59, 73%, 76%);
+    border: none;
+}
+
 
 .smallpic {
     width: 100px;
@@ -64,8 +69,14 @@ select,input {
     color: #FF0000;
 }
 
-.floatleft {
+select.floatleft {
     float:left;
+    width:70%;
+}
+
+span.floatleft {
+    float:left;
+    width:30%;
 }
 
 
