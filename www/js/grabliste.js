@@ -134,7 +134,7 @@ function get_url_param( name ){
  
  function fillDatabase() {
 	 alert("Erzeuge neue Datenbank");
-	 create_ol_ghaupt_small();
+	 create_ol_ghaupt_small(); // anders folgt in callback functions
  }
  
  
@@ -216,19 +216,16 @@ function get_url_param( name ){
                 			 fillSelectBox("reihe",fwhere);
                 			 fillSelectBox("stelle",fwhere);
                 			 fillSelectBox("gtext",fwhere);
-                			 fillSelectBox("gname",fwhere);
                 	 	 } else
                 	  	if(name=="abteil") {
                 		 	fwhere = fh+" AND "+at;
                 		 	fillSelectBox("reihe",fwhere);
                 		 	fillSelectBox("stelle",fwhere);
                 			fillSelectBox("gtext",fwhere);
-                			fillSelectBox("gname",fwhere);
                 	 	 } else
                 	  	if(name=="reihe") {
                 		 	fwhere = fh+" AND "+at+" AND "+rh;
                 			 fillSelectBox("stelle",fwhere);
-                			 fillSelectBox("gname",fwhere);
                 		  } 	  
                 	 
                 	 
@@ -265,10 +262,7 @@ function get_url_param( name ){
                 fillSelectBox('reihe');
                 fillSelectBox('stelle');
                 fillSelectBox('gtext');
-                fillSelectBox('gname');
-            
-            
-            
+         
             
              $("#mainform").submit(function() {
             	 
@@ -327,7 +321,11 @@ function get_url_param( name ){
 	  searchcriteria = "";
 	  for(key in values) {
 		 if (values[key].length) {
-			where += "AND "+key+"='"+values[key]+"' ";
+			 if (key=="gname") {
+				 where += "AND "+key+" LIKE '%"+values[key]+"%' ";
+			 } else {
+				where += "AND "+key+"='"+values[key]+"' ";
+			 }
 			searchcriteria += getFullName(key)+"="+values[key]+"<br/>";
 		 }
 		 
@@ -479,7 +477,7 @@ function get_url_param( name ){
         	   tx.executeSql("Update ol_gmangel set ischanged=0",[],function(txx,rs){
 				  alert("Update erfolgreich");	
 				},sql_error);
-         }
+         });
    }
    
    function  writeAndConfirm(zustaende,j) {
