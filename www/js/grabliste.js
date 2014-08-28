@@ -58,6 +58,8 @@ function get_url_param( name ){
 	 }, "json");
  }
  
+ 	
+ 
   function create_ol_gmangel() {
 	 
 	  
@@ -332,9 +334,11 @@ function get_url_param( name ){
 		 }
 		 
 	  }
+	  $("#content").load("spinner.html");
+	  
 	  $("#content").load("grablist.html", function() {
 		
-		 $("#proceed").load("spinner.html"); 
+		
 		 $("#searchcriteria").append(searchcriteria);
          
          db.transaction(function(tx) {
@@ -366,7 +370,6 @@ function get_url_param( name ){
                      	content = "<div onclick='showSingleGrave("+kindex+")'>"+content+"</div>";
                      	$('#table').append('<tr class="grabliste_row" ><td class="grabliste_feld">'+content+'</td></tr>');
                   	}
-                  	$("#proceed").html('<input id="goback" class="button" type="image" src="img/exit_large.png" onclick="loadStartPage()"  />');
 	                 
              	},sql_error);
             	 
