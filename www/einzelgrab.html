@@ -9,6 +9,8 @@
     </select>
     <input id="gmstinfo" name="gmstinfo" type="text" value="" placeholder="<Grabmal Info>" /> 
     </div>
+    
+<hr/>    
 <div><span class="text floatleft">Pflege</span>
     
     <select class="floatleft" id='pfzustand' name='pfzustand'>
@@ -16,6 +18,9 @@
     <input id="zustinfo" name="zustinfo" type="text" value="" placeholder="<Pflege Info>" /> 
     </div>
 
-     <input class="text button" name="submit" type="submit" value="Speichern" />
+     <input class="button" name="submit" type="image" src="img/exit_large.png" onclick="showGrablist(selectGraveValues);return false" />
+     <input class="button" name="submit" type="image" src="img/save_large.png" />
+     
+     
+     
 </form>
-<input class="text button" type="button" value="zurück" onclick="showGrablist(selectGraveValues)" />
