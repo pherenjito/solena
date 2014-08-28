@@ -344,18 +344,20 @@ function get_url_param( name ){
             		 $("#searchcriteria").append("<b class='error'>Zu viele Gräber - es werden nur "+limit+" angezeigt. Schränken Sie möglichst die Suchkriterien ein</b>");
             	 }
             	 orderby = " ORDER BY friedhof, abteil, reihe, stelle ";	 
-            	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, gtext, gname, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where+orderby" LIMIT "+limit,[],function(tx,rs) {
+            	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, friedhof, gtext, gname, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where+orderby" LIMIT "+limit,[],function(tx,rs) {
             	  	var i = 0;
                   	for (i=0; i < rs.rows.length; i++) {
-                    	gtext = is_not_null(rs.rows.item(i)['gtext']) ? rs.rows.item(i)['gtext'] : '';
-                    	gname = is_not_null(rs.rows.item(i)['gname']) ? rs.rows.item(i)['gname'] : '';
-                     	abteil = is_not_null(rs.rows.item(i)['abteil']) ? rs.rows.item(i)['abteil'] : '';
-                     	reihe = is_not_null(rs.rows.item(i)['reihe']) ? rs.rows.item(i)['reihe'] : '';
-                     	stelle = is_not_null(rs.rows.item(i)['stelle']) ? rs.rows.item(i)['stelle'] : '';
-                     	kindex = rs.rows.item(i)['kindex'];
-                     	gmzustand =  is_not_null(rs.rows.item(i)['gmzustand']) ? gm_mandantvalues[rs.rows.item(i)['gmzustand']] : "In Ordnung";
-                     	pfzustand =  is_not_null(rs.rows.item(i)['pfzustand']) ? pf_mandantvalues[rs.rows.item(i)['pfzustand']] : "In Ordnung";
-                     	content = '<b>'+gtext+'/'+gname+'</b><br/>';
+                  		var friedhof = is_not_null(rs.rows.item(i)['friedhof']) ? rs.rows.item(i)['friedhof'] : '';
+                    	var gtext = is_not_null(rs.rows.item(i)['gtext']) ? rs.rows.item(i)['gtext'] : '';
+                    	var gname = is_not_null(rs.rows.item(i)['gname']) ? rs.rows.item(i)['gname'] : '';
+                     	var abteil = is_not_null(rs.rows.item(i)['abteil']) ? rs.rows.item(i)['abteil'] : '';
+                     	var reihe = is_not_null(rs.rows.item(i)['reihe']) ? rs.rows.item(i)['reihe'] : '';
+                     	var stelle = is_not_null(rs.rows.item(i)['stelle']) ? rs.rows.item(i)['stelle'] : '';
+                     	var kindex = rs.rows.item(i)['kindex'];
+                     	var gmzustand =  is_not_null(rs.rows.item(i)['gmzustand']) ? gm_mandantvalues[rs.rows.item(i)['gmzustand']] : "In Ordnung";
+                     	var pfzustand =  is_not_null(rs.rows.item(i)['pfzustand']) ? pf_mandantvalues[rs.rows.item(i)['pfzustand']] : "In Ordnung";
+                     	var content = '<b>'+friedhof+'</b><br/>';
+                     	content += '<b>'+gtext+'/'+gname+'</b><br/>';
                      	content += '<div class="grabliste">'+abteil+'|'+reihe+'|'+stelle+'</div>';
                      	content += '<div class="grabliste">'+gmzustand+'</div>';
                      	content += '<div class="grabliste">'+pfzustand+'</div>';
