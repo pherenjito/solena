@@ -64,6 +64,10 @@ select,input {
     color: #FF0000;
 }
 
+.floatleft {
+    float:left;
+}
+
 
 
 
