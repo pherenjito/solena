@@ -449,9 +449,9 @@ function get_url_param( name ){
 	   	 var tdString = "'"+today.toISOString().split("T")[0]+"'";
 	   	 var gmdatum = "null";
 	   	 var pfdatum = "null";
-	     if (is_not_null(values['gmzustand']))
+	     if (is_not_null(values['gmzustand']) || is_not_null(values['gmstinfo']))
 	    	 gmdatum = tdString;
-	     if (is_not_null(values['pfzustand']))
+	     if (is_not_null(values['pfzustand']) || is_not_null(values['zustinfo']))
 	    	 pfdatum = tdString;
 	     gmstinfo = is_not_null(values['gmstinfo']) ? "'"+values['gmstinfo']+"'" : "null";
 	     zustinfo = is_not_null(values['zustinfo']) ? "'"+values['zustinfo']+"'" : "null";
