@@ -419,16 +419,16 @@ function get_url_param( name ){
                     var pfsel = is_not_null(rs.rows.item(0)['pfzustand']) ? "" : "selected";
                     $("#gmstinfo").val(rs.rows.item(0)['gmstinfo']);
                     $("#zustinfo").val(rs.rows.item(0)['zustinfo']);
-                    gmselect.append("<option "+gmsel+" value=''>In Ordnung</option>");
-                    pfselect.append("<option "+pfsel+" value=''>In Ordnung</option>");
+                    gmselect.append("<option "+gmsel+" value='' >In Ordnung</option>");
+                    pfselect.append("<option "+pfsel+" value='' >In Ordnung</option>");
 
                     for (gkey in  gm_mandantvalues) {
                         var sel = gkey==rs.rows.item(0)['gmzustand'] ? "selected" : "";
-                        gmselect.append('<option '+sel+' value="'+gkey+'">'+gm_mandantvalues[gkey]+'</option>');
+                        gmselect.append('<option '+sel+' value="'+gkey+'" >'+gm_mandantvalues[gkey]+'</option>');
                     }
                     for (pkey in  pf_mandantvalues) {
                         var sel = pkey==rs.rows.item(0)['pfzustand'] ? "selected" : "";
-                        pfselect.append('<option '+sel+' value="'+pkey+'">'+pf_mandantvalues[pkey]+'</option>');
+                        pfselect.append('<option '+sel+' value="'+pkey+'" >'+pf_mandantvalues[pkey]+'</option>');
                     }                  
             	 
             	 }, sql_error);
