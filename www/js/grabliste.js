@@ -239,10 +239,14 @@ function get_url_param( name ){
      }
  
      
-     function loadMenu() {
+     function loadMenu() { 
 		$("#content").load("menu.html", function() {
     	});
 
+     }
+     
+     function goBack() {
+    	 $("#goback").click();
      }
      
      function resetMainList() {
@@ -365,7 +369,7 @@ function get_url_param( name ){
                      	content = "<div onclick='showSingleGrave("+kindex+")'>"+content+"</div>";
                      	$('#table').append('<tr class="grabliste_row" ><td class="grabliste_feld">'+content+'</td></tr>');
                   	}
-                  	$("#proceed").html('<input id="back" class="button" type="image" src="img/exit_large.png" onclick="loadStartPage()"  />');
+                  	$("#proceed").html('<input id="goback" class="button" type="image" src="img/exit_large.png" onclick="loadStartPage()"  />');
 	                 
              	},sql_error);
             	 
