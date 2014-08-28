@@ -3,8 +3,6 @@ function get_url_param( name ){
 	var regexS = "[\\?&]"+name+"=([^&#]*)";
 	var regex = new RegExp( regexS );
 	var results = regex.exec( window.location.href );
-	
-	var selectGraveValues = {};
 
 	if ( results == null ) {
 		return "";
@@ -29,11 +27,13 @@ function get_url_param( name ){
   var pf_mandantvalues = new Object();
   var mandant_id;
   var url;
+  var db;
+  var selectGraveValues = {};
   
 
  function create_ol_ghaupt_small() {
 	 
-	 var db = window.sqlitePlugin.openDatabase({name: "grabliste"}); 
+	  
 	 $.get(url, {ol_ghaupt : 1, mandant_id : mandant_id }, function(obj){
 		var ghvalues = new Array();
      	var i = 0;        
@@ -60,7 +60,7 @@ function get_url_param( name ){
  
   function create_ol_gmangel() {
 	 
-	 var db = window.sqlitePlugin.openDatabase({name: "grabliste"}); 
+	  
 	 $.get(url, {ol_gmangel : 1, mandant_id : mandant_id }, function(obj){
 		 
 		var gmvalues = new Array();
@@ -99,7 +99,7 @@ function get_url_param( name ){
   
   function create_mandant_values() {
 	 
-	 var db = window.sqlitePlugin.openDatabase({name: "grabliste"}); 
+	  
 	 
 	 $.get(url, {mandant_values : 1, mandant_id : mandant_id }, function(obj){
 		var mandantvalues = new Array();
@@ -140,7 +140,7 @@ function get_url_param( name ){
  
  function init() {
      
-	var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
+	db = window.sqlitePlugin.openDatabase({name: "grabliste"});
 	        
         if (!(is_not_null(mandant_id) && is_not_null(url))) {        
         	db.transaction(function(tx) {
@@ -175,8 +175,7 @@ function get_url_param( name ){
      function fillSelectBox(name,where) {
     	 
     	 
-		var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
-
+	
     	 
     	 if (typeof(where) == "undefined")
     		 where = "";
@@ -257,8 +256,6 @@ function get_url_param( name ){
   
  function loadStartPage(){
      
-		var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
-
 
         $("#content").load("main.html", function() {
         	
@@ -339,7 +336,7 @@ function get_url_param( name ){
 		
 		 $("#proceed").load("spinner.html"); 
 		 $("#searchcriteria").append(searchcriteria);
-         var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
+         
          db.transaction(function(tx) {
         	 
         	 tx.executeSql('select count(*) from ol_ghaupt_small where '+where,[],function(tx,rs) {
@@ -388,7 +385,7 @@ function get_url_param( name ){
 		     
 		   	 where = "ol_ghaupt_small.kindex="+kindex;
 		   	 
-		     var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
+		     
 		     
              db.transaction(function(tx) {
             	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, gtext, gname, friedhof, abteil, reihe, stelle, gmzustand, pfzustand, gmstinfo, zustinfo from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where,[],function(tx,rs) {
@@ -464,7 +461,7 @@ function get_url_param( name ){
 	     zustinfo = is_not_null(values['zustinfo']) ? "'"+values['zustinfo']+"'" : "null";
 	     
 		   
-         var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
+         
          db.transaction(function(tx) {
                            
                tx.executeSql('replace into ol_gmangel (kindex, gmzustand, pfzustand, gmdatum, pfdatum, gmstinfo, zustinfo, ischanged) values ('+values['kindex']+',"'+values['gmzustand']+'","'+values['pfzustand']+'",'+gmdatum+','+pfdatum+','+gmstinfo+','+zustinfo+', 1)',[],function(tx,rs) {
@@ -479,7 +476,7 @@ function get_url_param( name ){
    }
    
    function reset_ol_gmangel() {
-	     var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
+	     
          db.transaction(function(tx) {
         	   tx.executeSql("Update ol_gmangel set ischanged=0",[],function(txx,rs){
 				  alert("Update erfolgreich");	
@@ -511,7 +508,7 @@ function get_url_param( name ){
    function writeToServer() {
 	   
        
-         var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
+         
          db.transaction(function(tx) {
              
                zustaende = new Array();
@@ -559,7 +556,7 @@ function get_url_param( name ){
    
    
     function saveSettings(values) {
-         var db = window.sqlitePlugin.openDatabase({name: "grabliste"});
+         
          db.transaction(function(tx) {
              
                 tx.executeSql('CREATE TABLE IF NOT EXISTS settings (key text primary key, value text)',[],function(tx,rs){
