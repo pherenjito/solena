@@ -317,10 +317,10 @@ function get_url_param( name ){
 
  
  function showGrablist(values) {
-	 var limit = 1000;
-	 
-	  where = "1=1 ";
-	  searchcriteria = "";
+	  var limit = 1000;
+	  var where = "1=1 ";
+	  var searchcriteria = "";
+	  
 	  for(key in values) {
 		 if (values[key].length) {
 			 if (key=="gname") {
@@ -340,12 +340,12 @@ function get_url_param( name ){
          db.transaction(function(tx) {
         	 
         	 tx.executeSql('select count(*) from ol_ghaupt_small where '+where,[],function(tx,rs) {
-        		 count = rs.rows.item(0)['count(*)'];
+        		 var count = rs.rows.item(0)['count(*)'];
             	 $("#searchcriteria").append("<b>"+count+" Gräber</b><br/>");
             	 if (count > limit) {
             		 $("#searchcriteria").append("<b class='error'>Zu viele Gräber - es werden nur "+limit+" angezeigt. Schränken Sie möglichst die Suchkriterien ein</b>");
             	 }
-            	 orderby = " ORDER BY friedhof, abteil, reihe, stelle ";	 
+            	 var orderby = " ORDER BY friedhof, abteil, reihe, stelle ";	 
             	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, friedhof, gtext, gname, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where+orderby+" LIMIT "+limit,[],function(tx,rs) {
             	  	var i = 0;
                   	for (i=0; i < rs.rows.length; i++) {
@@ -390,14 +390,14 @@ function get_url_param( name ){
              db.transaction(function(tx) {
             	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, gtext, gname, friedhof, abteil, reihe, stelle, gmzustand, pfzustand, gmstinfo, zustinfo from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where,[],function(tx,rs) {
             	   
-            		fri = '<b>Friedhof:'+(is_not_null(rs.rows.item(0)['friedhof']) ?  rs.rows.item(0)['friedhof'] : '')+"</b>";
-            		abt = 'Abt:'+(is_not_null(rs.rows.item(0)['abteil']) ?  rs.rows.item(0)['abteil'] : '')+"|";
-            		rei = 'Reihe:'+(is_not_null(rs.rows.item(0)['reihe']) ?  rs.rows.item(0)['reihe'] : '')+"|";
-            		ste = 'Stelle:'+(is_not_null(rs.rows.item(0)['stelle']) ? rs.rows.item(0)['stelle'] : ''); 
-            		gra = "Grabart:"+(is_not_null(rs.rows.item(0)['gtext']) ?  rs.rows.item(0)['gtext'] : '');
-            		gna = "Grabname:"+(is_not_null(rs.rows.item(0)['gname']) ?  rs.rows.item(0)['gname'] : '');
-            		gmzustand = rs.rows.item(0)['gmzustand'];
-            		pfzustand = rs.rows.item(0)['pfzustand'];
+            		var fri = '<b>Friedhof:'+(is_not_null(rs.rows.item(0)['friedhof']) ?  rs.rows.item(0)['friedhof'] : '')+"</b>";
+            		var abt = 'Abt:'+(is_not_null(rs.rows.item(0)['abteil']) ?  rs.rows.item(0)['abteil'] : '')+"|";
+            		var rei = 'Reihe:'+(is_not_null(rs.rows.item(0)['reihe']) ?  rs.rows.item(0)['reihe'] : '')+"|";
+            		var ste = 'Stelle:'+(is_not_null(rs.rows.item(0)['stelle']) ? rs.rows.item(0)['stelle'] : ''); 
+            		var gra = "Grabart:"+(is_not_null(rs.rows.item(0)['gtext']) ?  rs.rows.item(0)['gtext'] : '');
+            		var gna = "Grabname:"+(is_not_null(rs.rows.item(0)['gname']) ?  rs.rows.item(0)['gname'] : '');
+            		var gmzustand = rs.rows.item(0)['gmzustand'];
+            		var pfzustand = rs.rows.item(0)['pfzustand'];
             		$("#header").append(fri+"<br/>");
             		$("#header").append(abt+rei+ste+"<br/>");
             		$("#header").append(gra+"<br/>");
@@ -457,8 +457,8 @@ function get_url_param( name ){
 	    	 gmdatum = tdString;
 	     if (is_not_null(values['pfzustand']) || is_not_null(values['zustinfo']))
 	    	 pfdatum = tdString;
-	     gmstinfo = is_not_null(values['gmstinfo']) ? "'"+values['gmstinfo']+"'" : "null";
-	     zustinfo = is_not_null(values['zustinfo']) ? "'"+values['zustinfo']+"'" : "null";
+	     var gmstinfo = is_not_null(values['gmstinfo']) ? "'"+values['gmstinfo']+"'" : "null";
+	     var zustinfo = is_not_null(values['zustinfo']) ? "'"+values['zustinfo']+"'" : "null";
 	     
 		   
          
@@ -489,7 +489,7 @@ function get_url_param( name ){
 		   reset_ol_gmangel();
 		   return;
 	   }
-	   zustand = zustaende[j];
+	   var zustand = zustaende[j];
 	   $.post(
 			url+"?setData=1&mandant_id="+mandant_id,
 			{ kindex : zustand[0], gmzustand : zustand[1], pfzustand : zustand[2], gmdatum : zustand[3], pfdatum : zustand[4], gmstinfo : zustand[5], zustinfo : zustand[6] },
@@ -511,14 +511,14 @@ function get_url_param( name ){
          
          db.transaction(function(tx) {
              
-               zustaende = new Array();
+               var zustaende = new Array();
               
                tx.executeSql('select kindex, gmzustand, pfzustand, gmdatum, pfdatum, gmstinfo, zustinfo from ol_gmangel where ischanged=1',[],function(tx,rs) {
                   var i = 0;
                   for (i=0; i < rs.rows.length; i++) {
                 	var gmdatum = is_not_null(rs.rows.item(i)['gmdatum']) ? rs.rows.item(i)['gmdatum'] : '';
                 	var pfdatum = is_not_null(rs.rows.item(i)['pfdatum']) ? rs.rows.item(i)['pfdatum'] : '';
-                    zustand = [rs.rows.item(i)['kindex'],rs.rows.item(i)['gmzustand'],rs.rows.item(i)['pfzustand'],gmdatum,pfdatum,rs.rows.item(i)['gmstinfo'],rs.rows.item(i)['zustinfo']];
+                    var zustand = [rs.rows.item(i)['kindex'],rs.rows.item(i)['gmzustand'],rs.rows.item(i)['pfzustand'],gmdatum,pfdatum,rs.rows.item(i)['gmstinfo'],rs.rows.item(i)['zustinfo']];
                     zustaende.push(zustand);
                   }
                   
