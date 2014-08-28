@@ -5,27 +5,40 @@ select {
 
 .grablist_table {
     
-    border-spacing: 10px 30px;
+    border-spacing: 0px 30px;
 }
 
-.grabliste {
-    width:33%;
-    float:left;
+.grablist_table td {
+    border-left: none;
+    border-right: none;
+}
+
+
+
+.grabliste{
+    width: 33%;
+    height: 100%;
+    
     text-align:center;
+    border: 1px solid black;
+    background-color: #BBBBBB;
 }
 
-.grabliste.ok {
+.grabliste .block {
+    float:left;
+    height:100%;
+    width:100%;
+} 
+
+.grabliste .ok {
     background-color: #88BB88;
 }
 
-.grabliste.notok {
+.grabliste .notok {
     background-color: #BB8888;
 }
 
-.grabliste_feld {
-    width:100%;
-    background-color: #BBBBBB;
-    border: 1px solid black;
+.grabliste_row {
     height: 120px;
 }
 
@@ -63,12 +76,16 @@ input[type=image] {
     width: 60px;
     height: 60px;
     float: right;
-    margin: 5px;
+    margin: 10px;
 }
 
 input[type=text]  {
     background-color: hsl(59, 73%, 76%);
     border: none;
+}
+
+.topmargin {
+    margin-top:12px;
 }
 
 

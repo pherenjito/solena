@@ -364,13 +364,17 @@ function get_url_param( name ){
                      	var pfzustand =  is_not_null(rs.rows.item(i)['pfzustand']) ? pf_mandantvalues[rs.rows.item(i)['pfzustand']] : inordnung;
                      	var gmclass = gmzustand==inordnung ? "ok" : "notok";
                      	var pfclass = pfzustand==inordnung ? "ok" : "notok";
-                     	var content = '<b>'+friedhof+'</b><br/>';
-                     	content += '<b>'+gtext+'/'+gname+'</b><br/>';
-                     	content += '<div class="grabliste">'+abteil+'|'+reihe+'|'+stelle+'</div>';
-                     	content += '<div class="grabliste '+gmclass+'">'+gmzustand+'</div>';
-                     	content += '<div class="grabliste '+pfclass+'">'+pfzustand+'</div>';
-                     	content = "<div onclick='showSingleGrave("+kindex+")'>"+content+"</div>";
-                     	$('#table').append('<tr class="grabliste_row" ><td class="grabliste_feld">'+content+'</td></tr>');
+                     	var block = '<b>'+friedhof+'</b><br/>';
+                     	block += '<b>'+gname+'</b><br/>';
+                     	block += '<b>'+gtext+'</b><br/>';
+                     	block += abteil+'|'+reihe+'|'+stelle;
+                     	var block1 = '<div class="block" >'+block+'</div>';
+                     	var block2 = '<div class="block '+gmclass+'">Grabmalzustand:<br/>'+gmzustand+'</div>';
+                     	var block3 = '<div class="block '+pfclass+'">Pflegezustand:<br/>'+pfzustand+'</div>';
+                     	var content = '<td class="grabliste">'+block1+'</td>';
+                     	content += '<td class="grabliste">'+block2+'</td>';
+                     	content += '<td class="grabliste">'+block3+'</td>';
+                     	$('#table').append('<tr class="grabliste_row" onclick="showSingleGrave('+kindex+')">'+content+'</tr>');
                   	}
                   	$("#spinner").empty();
 	                 
