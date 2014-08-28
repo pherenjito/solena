@@ -14,6 +14,14 @@ select {
     text-align:center;
 }
 
+.grabliste.ok {
+    background-color: #88BB88;
+}
+
+.grabliste.notok {
+    background-color: #BB8888;
+}
+
 .grabliste_feld {
     width:100%;
     background-color: #BBBBBB;

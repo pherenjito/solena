@@ -334,7 +334,6 @@ function get_url_param( name ){
 		 }
 		 
 	  }
-	  $("#content").load("spinner.html");
 	  
 	  $("#content").load("grablist.html", function() {
 		
@@ -352,6 +351,7 @@ function get_url_param( name ){
             	 var orderby = " ORDER BY friedhof, abteil, reihe, stelle ";	 
             	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, friedhof, gtext, gname, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where+orderby+" LIMIT "+limit,[],function(tx,rs) {
             	  	var i = 0;
+            	  	var inordnung = "In Ordnung";
                   	for (i=0; i < rs.rows.length; i++) {
                   		var friedhof = is_not_null(rs.rows.item(i)['friedhof']) ? rs.rows.item(i)['friedhof'] : '';
                     	var gtext = is_not_null(rs.rows.item(i)['gtext']) ? rs.rows.item(i)['gtext'] : '';
@@ -360,16 +360,19 @@ function get_url_param( name ){
                      	var reihe = is_not_null(rs.rows.item(i)['reihe']) ? rs.rows.item(i)['reihe'] : '';
                      	var stelle = is_not_null(rs.rows.item(i)['stelle']) ? rs.rows.item(i)['stelle'] : '';
                      	var kindex = rs.rows.item(i)['kindex'];
-                     	var gmzustand =  is_not_null(rs.rows.item(i)['gmzustand']) ? gm_mandantvalues[rs.rows.item(i)['gmzustand']] : "In Ordnung";
-                     	var pfzustand =  is_not_null(rs.rows.item(i)['pfzustand']) ? pf_mandantvalues[rs.rows.item(i)['pfzustand']] : "In Ordnung";
+                     	var gmzustand =  is_not_null(rs.rows.item(i)['gmzustand']) ? gm_mandantvalues[rs.rows.item(i)['gmzustand']] : inordnung;
+                     	var pfzustand =  is_not_null(rs.rows.item(i)['pfzustand']) ? pf_mandantvalues[rs.rows.item(i)['pfzustand']] : inordnung;
+                     	var gmclass = gmzustand==inordnung ? "ok" : "notok";
+                     	var pfclass = pfzustand==inordnung ? "ok" : "notok";
                      	var content = '<b>'+friedhof+'</b><br/>';
                      	content += '<b>'+gtext+'/'+gname+'</b><br/>';
                      	content += '<div class="grabliste">'+abteil+'|'+reihe+'|'+stelle+'</div>';
-                     	content += '<div class="grabliste">'+gmzustand+'</div>';
-                     	content += '<div class="grabliste">'+pfzustand+'</div>';
+                     	content += '<div class="grabliste '+gmclass+'">'+gmzustand+'</div>';
+                     	content += '<div class="grabliste '+pfclass+'">'+pfzustand+'</div>';
                      	content = "<div onclick='showSingleGrave("+kindex+")'>"+content+"</div>";
                      	$('#table').append('<tr class="grabliste_row" ><td class="grabliste_feld">'+content+'</td></tr>');
                   	}
+                  	$("#spinner").empty();
 	                 
              	},sql_error);
             	 
