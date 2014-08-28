@@ -343,8 +343,8 @@ function get_url_param( name ){
             	 if (count > limit) {
             		 $("#searchcriteria").append("<b class='error'>Zu viele Gräber - es werden nur "+limit+" angezeigt. Schränken Sie möglichst die Suchkriterien ein</b>");
             	 }
-            		 
-            	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, gtext, gname, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where+" LIMIT "+limit,[],function(tx,rs) {
+            	 orderby = " ORDER BY friedhof, abteil, reihe, stelle ";	 
+            	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, gtext, gname, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where+orderby" LIMIT "+limit,[],function(tx,rs) {
             	  	var i = 0;
                   	for (i=0; i < rs.rows.length; i++) {
                     	gtext = is_not_null(rs.rows.item(i)['gtext']) ? rs.rows.item(i)['gtext'] : '';
