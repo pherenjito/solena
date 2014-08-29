@@ -49,7 +49,7 @@ function get_url_param( name ){
                     	var val = ghvalues[i];
                     	tx.executeSql("insert into ol_ghaupt_small values "+val);
                 	}
-                	alert("Tabelle ol_ghaupt_small erfolgreich synchronisiert");    
+                	$("#lfd").append("Tabelle ol_ghaupt_small erfolgreich synchronisiert<br/>.");    
                     create_ol_gmangel();
             	},sql_error);
          	},sql_error);
@@ -88,7 +88,7 @@ function get_url_param( name ){
                     	tx.executeSql("insert into ol_gmangel values "+val);
                  	  }
          
-                 	alert("Tabelle ol_gmangel erfolgreich synchronisiert"); 
+                 	$("#lfd").append("Tabelle ol_gmangel erfolgreich synchronisiert.<br/>"); 
                  	create_mandant_values();
                 
             	},sql_error);
@@ -123,7 +123,7 @@ function get_url_param( name ){
                     	tx.executeSql("insert into mandant_values values "+val,[],function(tx,rs){},sql_error);
                 	}
          
-                	alert("Tabelle mandant_values erfolgreich synchronisiert");
+                	$("#lfd").append("Tabelle mandant_values erfolgreich synchronisiert.<br/>");
 					init();
 
             	},sql_error);   
@@ -135,8 +135,11 @@ function get_url_param( name ){
  }
  
  function fillDatabase() {
-	 alert("Erzeuge neue Datenbank");
-	 create_ol_ghaupt_small(); // anders folgt in callback functions
+	 $("#content").load("reset_database.html", function() {
+		 alert("Erzeuge neue Datenbank");
+	 	 create_ol_ghaupt_small(); // anders folgt in callback functions
+     });
+	 
  }
  
  
@@ -543,6 +546,17 @@ function get_url_param( name ){
    
    
    function systemSettings() {
+	   
+	   //TODO nur für Testversion
+	   //*****
+	   
+	   if(!is_not_null(mandant_id))
+		   mandant_id = 612310;
+	   
+	   if(!is_not_null(url))
+		   url = "http://tommysql.ocw2.de/getjson.php";
+	   
+	   //*****
 	   
 	   $("#content").load("settings.html", function() {
 	       
