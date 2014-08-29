@@ -250,7 +250,11 @@ function get_url_param( name ){
      }
      
      function goBack() {
-    	 $("#goback").click();
+    	 if ($("#goback").length===0) {
+    		navigator.app.exitApp();
+    	 } else {
+    	 	$("#goback").click();
+    	 }
      }
      
      function resetMainList() {
