@@ -508,10 +508,10 @@ function get_url_param( name ){
             		var kindex =  rs.rows.item(0)['kindex'];
             		var gmzustand = rs.rows.item(0)['gmzustand'];
             		var pfzustand = rs.rows.item(0)['pfzustand'];
-            		$("#subheader").append(fri+"/");
-//            		$("#subheader").append(abt+rei+ste+"/");
-//            		$("#subheader").append(gra+"/");
-//            		$("#subheader").append(gna);
+            		$("#subheader").append(fri+"<br/>");
+            		$("#subheader").append(abt+rei+ste+"<br/>");
+            		$("#subheader").append(gra+"<br/>");
+            		$("#subheader").append(gna+"<br/>");
 					$("#kindex").val(kindex);            		
             		var gmselect = $('#gmzustand');
                     var pfselect = $('#pfzustand'); 
