@@ -1,3 +1,14 @@
+  
+  var gm_mandantvalues = new Object();
+  var pf_mandantvalues = new Object();
+  var mandant_id;
+  var url;
+  var db;
+  var selectGraveValues = {};
+  var PATH = "solena";
+  var FULLPATH = "/sdcard/"+PATH+"/";
+
+
 function get_url_param( name ){
 
 	var regexS = "[\\?&]"+name+"=([^&#]*)";
@@ -22,13 +33,7 @@ function get_url_param( name ){
       return str!="" && str!=null && str!="null" && str!="undefinded" && str!=undefined;
   }
 
-  
-  var gm_mandantvalues = new Object();
-  var pf_mandantvalues = new Object();
-  var mandant_id;
-  var url;
-  var db;
-  var selectGraveValues = {};
+
   
 
  function create_ol_ghaupt_small() {
@@ -142,6 +147,10 @@ function get_url_param( name ){
 	 
  }
  
+ function random() {
+	 return "?v="+(new Date()).getTime();
+ }
+ 
  
  function init() {
      
@@ -247,6 +256,77 @@ function get_url_param( name ){
 		$("#content").load("menu.html", function() {
     	});
 
+     }
+     
+     function onPhotoDataSuccess(imageURI) {
+  		var gotFileEntry = function(fileEntry) {
+    
+    		var gotFileSystem = function(fileSystem) {
+
+        		fileSystem.root.getDirectory("MyAppFolder", {
+            		create : true
+        		}, function(dataDir) {
+          			var d = new Date();
+          			var n = d.getTime();
+          			var newFileName = n + ".jpg";
+            		fileEntry.moveTo(dataDir, newFileName, null, fsFail);
+
+        		}, dirFail);
+
+    		};
+    
+    		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem,fsFail);
+		};
+		
+		//resolve file system for image
+		window.resolveLocalFileSystemURI(imageURI, gotFileEntry, fsFail);
+
+		var fsFail = function(error) {
+    		alert("failed with error code: " + error.code);
+
+		};
+
+		var dirFail = function(error) {
+    		alert("Directory error code: " + error.code);
+
+		};
+	}
+     
+     
+     
+     function takePicture(kindex) {
+    	 
+    	 var error = function(e) {
+    		 alert(error.code+"!!");
+    	 }
+    	
+    	  navigator.camera.getPicture(function(imageURI) {
+			   document.addEventListener("deviceready", function(){
+    		   		window.resolveLocalFileSystemURI(imageURI, function(fileEntry) {
+    			   		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+    				   		fileSystem.root.getDirectory(PATH, {create : true}, function(dataDir) {
+          						var d = new Date();
+          						var n = d.getTime();
+          						var newFileName = kindex + ".jpg";
+            					fileEntry.moveTo(dataDir, newFileName, null);
+
+								  var image = $('#grabimage');
+    		   					  image.css("display","inline");
+    		   					  image.attr("src",FULLPATH+newFileName+random());
+
+        					},error);
+    					},error);
+    			   	},error);
+    		   	}, false);
+    	  }, function(message) {
+    		   alert('Fehler: ' + message);
+    	  },
+    	   { quality: 50, 
+    		 destinationType: Camera.DestinationType.FILE_URI 
+    		});
+    	
+    	  
+    	  return false;
      }
      
      function goBack() {
@@ -413,13 +493,14 @@ function get_url_param( name ){
             		var ste = 'Stelle:'+(is_not_null(rs.rows.item(0)['stelle']) ? rs.rows.item(0)['stelle'] : ''); 
             		var gra = "Grabart:"+(is_not_null(rs.rows.item(0)['gtext']) ?  rs.rows.item(0)['gtext'] : '');
             		var gna = "Grabname:"+(is_not_null(rs.rows.item(0)['gname']) ?  rs.rows.item(0)['gname'] : '');
+            		var kindex =  rs.rows.item(0)['kindex'];
             		var gmzustand = rs.rows.item(0)['gmzustand'];
             		var pfzustand = rs.rows.item(0)['pfzustand'];
             		$("#header").append(fri+"<br/>");
             		$("#header").append(abt+rei+ste+"<br/>");
             		$("#header").append(gra+"<br/>");
             		$("#header").append(gna);
-            		$("#kindex").val( rs.rows.item(0)['kindex']);            		
+            		$("#kindex").val(kindex);            		
             		var gmselect = $('#gmzustand');
                     var pfselect = $('#pfzustand'); 
                     var gmsel = is_not_null(rs.rows.item(0)['gmzustand']) ? "" : "selected";
@@ -436,7 +517,15 @@ function get_url_param( name ){
                     for (pkey in  pf_mandantvalues) {
                         var sel = pkey==rs.rows.item(0)['pfzustand'] ? "selected" : "";
                         pfselect.append('<option '+sel+' value="'+pkey+'" >'+pf_mandantvalues[pkey]+'</option>');
-                    }                  
+                    }
+                    
+                    $("#grabimage").attr("src",FULLPATH+kindex+".jpg"+random());
+                    $("#grabimage").error(function(){
+  						$(this).hide();
+					});
+                    $("#takepicture").click(function() {
+                    	takePicture(kindex);
+                    });
             	 
             	 }, sql_error);
             	 
