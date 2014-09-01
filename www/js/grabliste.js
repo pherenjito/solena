@@ -253,7 +253,10 @@ function get_url_param( name ){
  
      
      function loadMenu() { 
-		$("#content").load("menu.html", function() {
+    	 
+    	$("#header").load("menu_header.html", function() {
+			$("#content").load("menu.html", function() {
+    		});
     	});
 
      }
@@ -345,6 +348,8 @@ function get_url_param( name ){
   
  function loadStartPage(){
      
+	 
+	  $("#header").load("main_header.html", function() {
 
         $("#content").load("main.html", function() {
         	
@@ -369,6 +374,8 @@ function get_url_param( name ){
     		});
         
         });
+        
+	  });
 
         
          db.transaction(function(tx) {
@@ -417,11 +424,13 @@ function get_url_param( name ){
 			 } else {
 				where += "AND "+key+"='"+values[key]+"' ";
 			 }
-			searchcriteria += getFullName(key)+"="+values[key]+"<br/>";
+			//searchcriteria += getFullName(key)+"="+values[key]+"<br/>";
+			 searchcriteria += values[key]+"/";
 		 }
 		 
 	  }
 	  
+	 $("#header").load("grablist_header.html", function() {
 	  $("#content").load("grablist.html", function() {
 		
 		
@@ -431,9 +440,9 @@ function get_url_param( name ){
         	 
         	 tx.executeSql('select count(*) from ol_ghaupt_small where '+where,[],function(tx,rs) {
         		 var count = rs.rows.item(0)['count(*)'];
-            	 $("#searchcriteria").append("<b>"+count+" Gräber</b><br/>");
+            	 $("#treffer").append("<b>"+count+" Gräber</b><br/>");
             	 if (count > limit) {
-            		 $("#searchcriteria").append("<b class='error'>Zu viele Gräber - es werden nur "+limit+" angezeigt. Schränken Sie möglichst die Suchkriterien ein</b>");
+            		 $("#warnung").append("<b class='error'>Zu viele Gräber - es werden nur "+limit+" angezeigt. Schränken Sie möglichst die Suchkriterien ein</b>");
             	 }
             	 var orderby = " ORDER BY friedhof, abteil, reihe, stelle ";	 
             	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, friedhof, gtext, gname, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where+orderby+" LIMIT "+limit,[],function(tx,rs) {
@@ -473,11 +482,14 @@ function get_url_param( name ){
          
          
      });
+	});  
    return false;
  }
 
  
  function showSingleGrave(kindex) {
+	$("#header").load("einzelgrab_header.html", function() {
+
 	   $("#content").load("einzelgrab.html", function() {
 		     
 		   	 where = "ol_ghaupt_small.kindex="+kindex;
@@ -496,11 +508,11 @@ function get_url_param( name ){
             		var kindex =  rs.rows.item(0)['kindex'];
             		var gmzustand = rs.rows.item(0)['gmzustand'];
             		var pfzustand = rs.rows.item(0)['pfzustand'];
-            		$("#header").append(fri+"<br/>");
-            		$("#header").append(abt+rei+ste+"<br/>");
-            		$("#header").append(gra+"<br/>");
-            		$("#header").append(gna);
-            		$("#kindex").val(kindex);            		
+            		$("#subheader").append(fri+"/");
+//            		$("#subheader").append(abt+rei+ste+"/");
+//            		$("#subheader").append(gra+"/");
+//            		$("#subheader").append(gna);
+					$("#kindex").val(kindex);            		
             		var gmselect = $('#gmzustand');
                     var pfselect = $('#pfzustand'); 
                     var gmsel = is_not_null(rs.rows.item(0)['gmzustand']) ? "" : "selected";
@@ -551,6 +563,7 @@ function get_url_param( name ){
 
 		   
 	   });
+	});
   }
 
   
@@ -651,6 +664,8 @@ function get_url_param( name ){
 	   
 	   //*****
 	   
+	   $("#header").load("settings_header.html", function() {
+
 	   $("#content").load("settings.html", function() {
 	       
 	        $("#mandant_id").val(mandant_id);
@@ -669,6 +684,7 @@ function get_url_param( name ){
     		});
         
         });
+	    });
    }
    
    

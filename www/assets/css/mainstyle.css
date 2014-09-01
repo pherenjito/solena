@@ -43,11 +43,15 @@ select {
 }
 
 .text {
-    font-size: 34px;
+    font-size: 18px;
 }
 
 .button {
     margin-top: 20px;
+}
+
+.button.large {
+    width:100%;
 }
 
 h1 {
@@ -67,8 +71,8 @@ td {
 
 
 select,input {
-    height: 70px;
-    font-size: 34px;
+    height: 50px;
+    font-size: 24px;
     width:100%;
 }
 
@@ -89,13 +93,8 @@ input[type=text]  {
 }
 
 
-.smallpic {
-    width: 100px;
-}
 
-.upright {
-    float: right;
-}
+
 
 .error {
     color: #FF0000;
@@ -111,15 +110,58 @@ span.floatleft {
     width:30%;
 }
 
-#proceed {
-    position: fixed;
-    top: 0;
-    right: 0;
+#content {
+    width: 100%;
+    margin-top:100px;
 }
 
 
+#header_container { 
+    border:1px solid #666; 
+    height:60px; 
+    left:0; 
+    position:fixed; 
+    width:100%; 
+    top:0; 
+    background-color:white;
+    opacity: 1;
+}
+#header { 
+    line-height:60px; 
+    margin:0 auto; 
+    width:100%; 
+    
+}
+
+#grabimage {
+    
+    
+    margin: 10px;
+}
+ 
 
 
+
+.smallpic {
+    width: 50px;
+    height: 50px;
+}
+
+
+.upright {
+    position: absolute;
+    right: 0;
+   
+}
+
+.upleft.smallpic  {
+    margin-left:0px;
+}
+
+.upleft  {
+    float:left;
+    margin-left: 20px;
+}
 
 
 
