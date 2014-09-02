@@ -260,77 +260,9 @@ function get_url_param( name ){
     	});
 
      }
-     
-     function onPhotoDataSuccess(imageURI) {
-  		var gotFileEntry = function(fileEntry) {
-    
-    		var gotFileSystem = function(fileSystem) {
 
-        		fileSystem.root.getDirectory("MyAppFolder", {
-            		create : true
-        		}, function(dataDir) {
-          			var d = new Date();
-          			var n = d.getTime();
-          			var newFileName = n + ".jpg";
-            		fileEntry.moveTo(dataDir, newFileName, null, fsFail);
 
-        		}, dirFail);
-
-    		};
-    
-    		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem,fsFail);
-		};
-		
-		//resolve file system for image
-		window.resolveLocalFileSystemURI(imageURI, gotFileEntry, fsFail);
-
-		var fsFail = function(error) {
-    		alert("failed with error code: " + error.code);
-
-		};
-
-		var dirFail = function(error) {
-    		alert("Directory error code: " + error.code);
-
-		};
-	}
-     
-     
-     
-     function takePicture(kindex) {
-    	 
-    	 var error = function(e) {
-    		 alert(error.code+"!!");
-    	 }
-    	
-    	  navigator.camera.getPicture(function(imageURI) {
-			   document.addEventListener("deviceready", function(){
-    		   		window.resolveLocalFileSystemURI(imageURI, function(fileEntry) {
-    			   		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
-    				   		fileSystem.root.getDirectory(PATH, {create : true}, function(dataDir) {
-          						var d = new Date();
-          						var n = d.getTime();
-          						var newFileName = kindex + ".jpg";
-            					fileEntry.moveTo(dataDir, newFileName, null);
-
-								  var image = $('#grabimage');
-    		   					  image.css("display","inline");
-    		   					  image.attr("src",FULLPATH+newFileName+random());
-
-        					},error);
-    					},error);
-    			   	},error);
-    		   	}, false);
-    	  }, function(message) {
-    		   alert('Fehler: ' + message);
-    	  },
-    	   { quality: 50, 
-    		 destinationType: Camera.DestinationType.FILE_URI 
-    		});
-    	
-    	  
-    	  return false;
-     }
+  
      
      function goBack() {
     	 if ($("#goback").length===0) {
@@ -467,10 +399,11 @@ function get_url_param( name ){
                      	var block1 = '<div class="block" >'+block+'</div>';
                      	var block2 = '<div class="block '+gmclass+'">Grabmalzustand:<br/>'+gmzustand+'</div>';
                      	var block3 = '<div class="block '+pfclass+'">Pflegezustand:<br/>'+pfzustand+'</div>';
-                     	var content = '<td class="grabliste">'+block1+'</td>';
-                     	content += '<td class="grabliste">'+block2+'</td>';
-                     	content += '<td class="grabliste">'+block3+'</td>';
-                     	$('#table').append('<tr class="grabliste_row" onclick="showSingleGrave('+kindex+')">'+content+'</tr>');
+                     	var content = '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block1+'</td>';
+                     	content += '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block2+'</td>';
+                     	content += '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block3+'</td>';
+                     	content += "<td class='grabliste' onclick='showFotoView("+kindex+")'> <img src='img/foto.png'  class='foto' /></td>";
+                     	$('#table').append('<tr class="grabliste_row">'+content+'</tr>');
                   	}
                   	$("#spinner").empty();
 	                 
@@ -485,6 +418,86 @@ function get_url_param( name ){
 	});  
    return false;
  }
+ 
+ 
+    function takePicture(kindex,i) {
+    	 
+    	 alert("kindex "+kindex);
+    	 var error = function(e) {
+    		 alert(error.code+"!!");
+    		 alert(error.stack);
+    	 }
+    	
+    	  navigator.camera.getPicture(function(imageURI) {
+			   document.addEventListener("deviceready", function(){
+    		   		window.resolveLocalFileSystemURI(imageURI, function(fileEntry) {
+    			   		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+    				   		fileSystem.root.getDirectory(PATH, {create : true}, function(dataDir) {
+          						var d = new Date();
+          						var n = d.getTime();
+          						var newFileName = kindex +"-"+i+ ".jpg";
+          						alert(newFileName+ "nFn");
+            					fileEntry.moveTo(dataDir, newFileName, null);
+								
+            					$("#fotos").append("<div class='grabimage'><img src="+FULLPATH+newFileName+random()+" /> </div>");
+        					},error);
+    					},error);
+    			   	},error);
+    		   	}, false);
+    	  }, function(message) {
+    		   alert('Fehler: ' + message);
+    	  },
+    	   { quality: 50, 
+    		 destinationType: Camera.DestinationType.FILE_URI 
+    		});
+    	
+    	  
+    	  return false;
+     }
+ 
+ 	function iteratePictureFiles(kindex,i){
+ 		
+ 	    localPath = FULLPATH+kindex+"-"+i+".jpg";
+ 	    alert(localPath);
+    	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem){
+        	fileSystem.root.getFile(localPath, { create: false }, function(fileEntry) {
+        		alert("showimage" +localPath);
+        		$("#fotos").append("<div class='grabimage' ><img src="+localPath+random()+" /> </div>");
+        		iterateFiles(kindex,i+1);  
+        	}, function(evt) {
+        		alert(JSON.stringify(evt));
+				
+        		$("#takepicture").click(function() {
+                	takePicture(kindex,i);
+             	});
+        	});
+    	}, function(evt) {
+    			alert("fin2");
+        		$("#takepicture").click(function() {
+                	takePicture(kindex,i);
+             	});
+        	}); 
+	}
+ 
+ 
+ 
+ function showFotoView(kindex) {
+	 
+	 $("#header").load("foto_header.html", function() {
+		
+	   $("#content").load("foto.html", function() {
+		   		    
+		  
+
+		  
+			iteratePictureFiles(kindex,1);  
+			alert("finish");
+			
+	   });
+	 });
+	 
+ }
+ 
 
  
  function showSingleGrave(kindex) {
@@ -530,14 +543,6 @@ function get_url_param( name ){
                         var sel = pkey==rs.rows.item(0)['pfzustand'] ? "selected" : "";
                         pfselect.append('<option '+sel+' value="'+pkey+'" >'+pf_mandantvalues[pkey]+'</option>');
                     }
-                    
-                    $("#grabimage").attr("src",FULLPATH+kindex+".jpg"+random());
-                    $("#grabimage").error(function(){
-  						$(this).hide();
-					});
-                    $("#takepicture").click(function() {
-                    	takePicture(kindex);
-                    });
             	 
             	 }, sql_error);
             	 
