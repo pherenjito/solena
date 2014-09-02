@@ -16,7 +16,7 @@ select {
 
 
 .grabliste{
-    width: 25%;
+    width: 33%;
     height: 100%;
     
     text-align:center;
@@ -52,11 +52,6 @@ select {
 
 .button.large {
     width:100%;
-}
-
-.foto {
-    width: 50px;
-    height:50px;
 }
 
 h1 {
@@ -138,13 +133,10 @@ span.floatleft {
     
 }
 
-
-
 #grabimage {
-        
-    width:   100%;
-    height:  100%;
     
+    
+    margin: 10px;
 }
  
 
