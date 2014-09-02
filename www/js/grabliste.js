@@ -261,39 +261,6 @@ function get_url_param( name ){
 
      }
      
-//     function onPhotoDataSuccess(imageURI) {
-//  		var gotFileEntry = function(fileEntry) {
-//    
-//    		var gotFileSystem = function(fileSystem) {
-//
-//        		fileSystem.root.getDirectory("MyAppFolder", {
-//            		create : true
-//        		}, function(dataDir) {
-//          			var d = new Date();
-//          			var n = d.getTime();
-//          			var newFileName = n + ".jpg";
-//            		fileEntry.moveTo(dataDir, newFileName, null, fsFail);
-//
-//        		}, dirFail);
-//
-//    		};
-//    
-//    		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFileSystem,fsFail);
-//		};
-//		
-//		//resolve file system for image
-//		window.resolveLocalFileSystemURI(imageURI, gotFileEntry, fsFail);
-//
-//		var fsFail = function(error) {
-//    		alert("failed with error code: " + error.code);
-//
-//		};
-//
-//		var dirFail = function(error) {
-//    		alert("Directory error code: " + error.code);
-//
-//		};
-//	}
      
      
      
@@ -331,6 +298,43 @@ function get_url_param( name ){
     	  
     	  return false;
      }
+     
+     
+      function showFotoView(kindex) {
+	 
+	 	$("#header").load("foto_header.html", function() {
+		
+	   		 $("#content").load("foto.html", function() {
+		   		   
+		  
+		   		var end = 0;
+		   		for(var i=1;i<10;i++) {
+			   		localPath = FULLPATH+kindex+"-"+1+".jpg";
+			   		$("#fotos").append("<div id='gi"+i+"' class='grabimage' ><img src="+localPath+random()+" /> </div>");
+			   
+			   		$("#gi"+i).error(function() {
+				   		$(this).hide();
+				   		if (end==0)
+						   		end = i;
+			   		});
+			   
+				   }
+		   		
+		   		$("#takepicture").click(function() {
+			   		if (end>0) { 
+		                	takePicture(kindex,i);
+			   		} else {
+				   		alert("die Maximalzahl an Bildern für dieses Grab ist erreicht");
+			   		}
+            		});
+
+		  
+		
+			
+	   		});
+	 	});
+	 
+ }
      
      function goBack() {
     	 if ($("#goback").length===0) {
@@ -467,10 +471,11 @@ function get_url_param( name ){
                      	var block1 = '<div class="block" >'+block+'</div>';
                      	var block2 = '<div class="block '+gmclass+'">Grabmalzustand:<br/>'+gmzustand+'</div>';
                      	var block3 = '<div class="block '+pfclass+'">Pflegezustand:<br/>'+pfzustand+'</div>';
-                     	var content = '<td class="grabliste">'+block1+'</td>';
-                     	content += '<td class="grabliste">'+block2+'</td>';
-                     	content += '<td class="grabliste">'+block3+'</td>';
-                     	$('#table').append('<tr class="grabliste_row" onclick="showSingleGrave('+kindex+')">'+content+'</tr>');
+                     	var content = '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block1+'</td>';
+                     	content += '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block2+'</td>';
+                     	content += '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block3+'</td>';
+                     	content += "<td class='grabliste' onclick='showFotoView("+kindex+")'> <img src='img/foto.png'  class='foto' /></td>";
+                     	$('#table').append('<tr class="grabliste_row">'+content+'</tr>');
                   	}
                   	$("#spinner").empty();
 	                 
