@@ -454,18 +454,24 @@ function get_url_param( name ){
     	  
     	  return false;
      }
+    
+   
  
  	function iteratePictureFiles(kindex,i){
  		
- 	    localPath = FULLPATH+kindex+"-"+i+".jpg";
+ 	    localPath = FULLPATH+kindex+".jpg";
+ 	    //localPath = FULLPATH+kindex+"-"+i+".jpg";
+ 	    localPath = "/sdcard/solena/Download.jpg";
  	    alert(localPath);
     	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem){
+    		alert("bis hierhin ok");
         	fileSystem.root.getFile(localPath, { create: false }, function(fileEntry) {
         		alert("showimage" +localPath);
         		$("#fotos").append("<div class='grabimage' ><img src="+localPath+random()+" /> </div>");
         		iterateFiles(kindex,i+1);  
-        	}, function(evt) {
-        		alert(JSON.stringify(evt));
+			}, 
+        	function(evt) {
+        		alert(evt.code);
 				
         		$("#takepicture").click(function() {
                 	takePicture(kindex,i);
