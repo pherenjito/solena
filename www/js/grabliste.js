@@ -264,7 +264,7 @@ function get_url_param( name ){
      
      
      
-     function takePicture(kindex) {
+     function takePicture(kindex,i) {
     	 
     	 var error = function(e) {
     		 alert(error.code+"!!");
@@ -277,12 +277,11 @@ function get_url_param( name ){
     				   		fileSystem.root.getDirectory(PATH, {create : true}, function(dataDir) {
           						var d = new Date();
           						var n = d.getTime();
-          						var newFileName = kindex + ".jpg";
-            					fileEntry.moveTo(dataDir, newFileName, null);
-
-								  var image = $('#grabimage');
-    		   					  image.css("display","inline");
-    		   					  image.attr("src",FULLPATH+newFileName+random());
+          						var filename = kindex+"-"+i+".jpg";
+            					fileEntry.moveTo(dataDir, filename, null);
+            					
+            					localPath = FULLPATH+filename;
+        						$("#fotos").append("<div class='grabimage' ><img src="+localPath+random()+" /> </div>");
 
         					},error);
     					},error);
@@ -299,34 +298,68 @@ function get_url_param( name ){
     	  return false;
      }
      
+   function iteratePictureFiles(kindex,i){
+ 		
+     	var filename=kindex+"-"+i+".jpg";
+ 	    var localPath = PATH+"/"+filename
+    	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem){
+        	fileSystem.root.getFile(localPath, { create: false }, function(fileEntry) {
+        		localPath = FULLPATH+filename;
+        		$("#fotos").append("<div class='grabimage' ><img src="+localPath+random()+" /> </div>");
+        		iteratePictureFiles(kindex,i+1);  
+        	}, function(evt) {				
+        		$("#takepicture").click(function() {
+                	takePicture(kindex,i);
+             	});
+        	});
+    	}, function(evt) {
+    			alert("fin2");
+        		$("#takepicture").click(function() {
+                	takePicture(kindex,i);
+             	});
+        	});
+    	
+	}
+     
      
       function showFotoView(kindex) {
 	 
 	 	$("#header").load("foto_header.html", function() {
 		
 	   		 $("#content").load("foto.html", function() {
-		   		   
-		  
-		   		var end = 0;
-		   		for(var i=1;i<10;i++) {
-			   		localPath = FULLPATH+kindex+"-"+1+".jpg";
-			   		$("#fotos").append("<div id='gi"+i+"' class='grabimage' ><img src="+localPath+random()+" /> </div>");
-			   
-			   		$("#gi"+i).error(function() {
-				   		$(this).hide();
-				   		if (end==0)
-						   		end = i;
-			   		});
-			   
-				   }
 		   		
-		   		$("#takepicture").click(function() {
-			   		if (end>0) { 
-		                	takePicture(kindex,i);
-			   		} else {
-				   		alert("die Maximalzahl an Bildern für dieses Grab ist erreicht");
-			   		}
-            		});
+	   			 
+	   			 iteratePictureFiles(kindex,1);
+		  
+//		   		var end = 0;
+//		   		for(var i=1;i<10;i++) {
+//
+//			   		localPath = FULLPATH+kindex+"-"+i+".jpg";
+//			   		$("#fotos").append("<div class='grabimage' ><img  id='gi"+i+"' src='' /> </div>");
+//			   
+//			   		alert("i "+i);
+//					$("#gi"+i).error(function() {
+//			   			alert("Hide "+i);
+//				   		$(this).hide();
+//				   		if (end==0) {
+//							end = i;
+//							//break;
+//				   		}
+//			   		});
+//					
+//					$("#gi").attr('src',localPath+random());
+//		   		
+//		   		}
+//		   		
+//		   		alert("end "+end);
+//		   		
+//		   		$("#takepicture").click(function() {
+//			   		if (end>0) { 
+//		                	takePicture(kindex,end);
+//			   		} else {
+//				   		alert("die Maximalzahl an Bildern für dieses Grab ist erreicht");
+//			   		}
+//            	});
 
 		  
 		
@@ -474,7 +507,7 @@ function get_url_param( name ){
                      	var content = '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block1+'</td>';
                      	content += '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block2+'</td>';
                      	content += '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block3+'</td>';
-                     	content += "<td class='grabliste' onclick='showFotoView("+kindex+")'> <img src='img/foto.png'  class='foto' /></td>";
+                     	content += "<td class='grabliste' onclick='showFotoView("+kindex+")'><img src='img/foto.png'  class='foto' /></td>";
                      	$('#table').append('<tr class="grabliste_row">'+content+'</tr>');
                   	}
                   	$("#spinner").empty();
@@ -536,13 +569,13 @@ function get_url_param( name ){
                         pfselect.append('<option '+sel+' value="'+pkey+'" >'+pf_mandantvalues[pkey]+'</option>');
                     }
                     
-                    $("#grabimage").attr("src",FULLPATH+kindex+".jpg"+random());
-                    $("#grabimage").error(function(){
-  						$(this).hide();
-					});
-                    $("#takepicture").click(function() {
-                    	takePicture(kindex);
-                    });
+//                    $("#grabimage").attr("src",FULLPATH+kindex+".jpg"+random());
+//                    $("#grabimage").error(function(){
+//  						$(this).hide();
+//					});
+//                    $("#takepicture").click(function() {
+//                    	takePicture(kindex);
+//                    });
             	 
             	 }, sql_error);
             	 

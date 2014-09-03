@@ -16,7 +16,7 @@ select {
 
 
 .grabliste{
-    width: 33%;
+    width: 25%;
     height: 100%;
     
     text-align:center;
@@ -29,6 +29,12 @@ select {
     height:100%;
     width:100%;
 } 
+
+
+.foto {
+    width:60px;
+    height:45px;
+}
 
 .grabliste .ok {
     background-color: #88BB88;
@@ -133,10 +139,16 @@ span.floatleft {
     
 }
 
-#grabimage {
-    
+.grabimage {
     
     margin: 10px;
+    text-align:center;
+}
+
+.grabimage img {
+        
+        width: 480px;
+        height: 270px;
 }
  
 
