@@ -1,163 +1,21 @@
-  
-  var gm_mandantvalues = new Object();
-  var pf_mandantvalues = new Object();
-  var mandant_id;
-  var url;
-  var db;
-  var selectGraveValues = {};
-  var PATH = "solena";
-  var FULLPATH = "/sdcard/"+PATH+"/";
 
-
-function get_url_param( name ){
-
-	var regexS = "[\\?&]"+name+"=([^&#]*)";
-	var regex = new RegExp( regexS );
-	var results = regex.exec( window.location.href );
-
-	if ( results == null ) {
-		return "";
-	}	
-	else {
-		return results[1];
-	}
-}
  
-   function sql_error(tx,error) {
-       alert("Error: "+error.message);
-  }  
-  
-  
-  function is_not_null(str) {
-      
-      return str!="" && str!=null && str!="null" && str!="undefinded" && str!=undefined;
-  }
-
+ var selectboxes = ["friedhof","abteil","reihe","stelle","gtext"];
 
   
-
- function create_ol_ghaupt_small() {
-	 
-	  
-	 $.get(url, {ol_ghaupt : 1, mandant_id : mandant_id }, function(obj){
-		var ghvalues = new Array();
-     	var i = 0;        
-     	for(i = 0; i < (obj.length-1); i++) {
-        	var val = '('+obj[i]['kindex']+",'"+obj[i]['friedhof']+"','"+obj[i]['abteil']+"','"+obj[i]['reihe']+"','"+obj[i]['stelle']+"','"+obj[i]['gtext']+"','"+obj[i]['gname']+"')";
-         	ghvalues.push(val);
-     	}
-     	db.transaction(function(tx) {
-     		tx.executeSql("Drop table if exists ol_ghaupt_small",[],function(tx,rs) {
-            	tx.executeSql('CREATE TABLE IF NOT EXISTS ol_ghaupt_small (kindex integer primary key, friedhof text, abteil text, reihe text, stelle text, gtext text, gname text)',[],function(tx,rs){
-                	var i = 0;
-                	for(i=0;i<(ghvalues.length);i++) {
-                    	var val = ghvalues[i];
-                    	tx.executeSql("insert into ol_ghaupt_small values "+val);
-                	}
-                	$("#lfd").append("Tabelle ol_ghaupt_small erfolgreich synchronisiert<br/>.");    
-                    create_ol_gmangel();
-            	},sql_error);
-         	},sql_error);
-     	});
-		 
-	 }, "json");
- }
- 
- 	
- 
-  function create_ol_gmangel() {
-	 
-	  
-	 $.get(url, {ol_gmangel : 1, mandant_id : mandant_id }, function(obj){
-		 
-		var gmvalues = new Array();
-     	var i = 0;        
-     	for(i = 0; i < (obj.length-1); i++) {
-        	gmzustand = is_not_null(obj[i]['gmzustand']) ? "'"+obj[i]['gmzustand']+"'" : "null";
-            pfzustand = is_not_null(obj[i]['pfzustand']) ? "'"+obj[i]['pfzustand']+"'" : "null";
-			gmdatum = is_not_null(obj[i]['gmdatum']) ? "'"+obj[i]['gmdatum']+"'" : "null";
-			pfdatum = is_not_null(obj[i]['pfdatum']) ? "'"+obj[i]['pfdatum']+"'" : "null";
-			gmstinfo = is_not_null(obj[i]['gmstinfo']) ? "'"+obj[i]['gmstinfo']+"'" : "null";
-			zustinfo = is_not_null(obj[i]['zustinfo']) ? "'"+obj[i]['zustinfo']+"'" : "null";
-            
-         	var val = '('+obj[i]['kindex']+","+gmzustand+","+pfzustand+","+gmdatum+","+pfdatum+","+gmstinfo+","+zustinfo+", 0)";
-         	gmvalues.push(val);
-     	}
-     	db.transaction(function(tx) {
-     		tx.executeSql("Drop table if exists ol_gmangel",[],function(tx,rs) {
-            	tx.executeSql('CREATE TABLE IF NOT EXISTS ol_gmangel (kindex integer primary key, gmzustand text, pfzustand text, gmdatum text, pfdatum text, gmstinfo text,zustinfo text,ischanged integer)',[],function(tx,rs){
-                
-                	 var i = 0;
-                 	 for(i=0;i<(gmvalues.length);i++) {
-                    	var val = gmvalues[i];
-                    	tx.executeSql("insert into ol_gmangel values "+val);
-                 	  }
-         
-                 	$("#lfd").append("Tabelle ol_gmangel erfolgreich synchronisiert.<br/>"); 
-                 	create_mandant_values();
-                
-            	},sql_error);
-         	});
-     		
-     	},sql_error);
-		 
-	 }, "json");
- }
-  
-  function create_mandant_values() {
-	 
-	  
-	 
-	 $.get(url, {mandant_values : 1, mandant_id : mandant_id }, function(obj){
-		var mandantvalues = new Array();
-     	var i = 0;        
-     	for(i = 0; i < (obj.length-1); i++) {
-        	 group = is_not_null(obj[i]['group_name']) ? "'"+obj[i]['group_name']+"'" : "null";
-             key =   is_not_null(obj[i]['value_name']) ? "'"+obj[i]['value_name']+"'" : "null";
-             value = is_not_null(obj[i]['value_text']) ? "'"+obj[i]['value_text']+"'" : "null";   
-         	 var val = '('+group+","+key+","+value+")";
-         	 mandantvalues.push(val);
-     	}
-     	db.transaction(function(tx) {
-     		tx.executeSql("Drop table if exists mandant_values",[],function(tx,rs) {
-            	tx.executeSql('CREATE TABLE IF NOT EXISTS mandant_values (mvgroup text, key text, value text)',[],function(tx,rs){
-                
-                	var i = 0;
-                	for(i=0;i<(mandantvalues.length);i++) {
-                    	var val = mandantvalues[i];
-                    	tx.executeSql("insert into mandant_values values "+val,[],function(tx,rs){},sql_error);
-                	}
-         
-                	$("#lfd").append("Tabelle mandant_values erfolgreich synchronisiert.<br/>");
-					init();
-
-            	},sql_error);   
-         	},sql_error);
-     		
-     	});
-		 
-	 }, "json");
- }
- 
- function fillDatabase() {
-	 $("#content").load("reset_database.html", function() {
-		 alert("Erzeuge neue Datenbank");
-	 	 create_ol_ghaupt_small(); // anders folgt in callback functions
-     });
-	 
- }
- 
- function random() {
-	 return "?v="+(new Date()).getTime();
- }
- 
- 
  function init() {
-     
-	db = window.sqlitePlugin.openDatabase({name: "grabliste"});
-	        
-        if (!(is_not_null(mandant_id) && is_not_null(url))) {        
+	
+		db = window.sqlitePlugin.openDatabase({name: "grabliste"});
+	    
+		//db = window.openDatabase("grabliste","3.0","grabliste", 1000000);
+
+		
+		var settings_dont_exist = !(is_not_null(mandant_id) && is_not_null(url));
+		
+        if (application_type == "tombejo" && settings_dont_exist) {
+        	
         	db.transaction(function(tx) {
+        		        		
             	tx.executeSql('select key, value from settings',[],function(tx,rs) {
             	    var i = 0;
                 	for (i=0; i < rs.rows.length; i++) {
@@ -168,6 +26,7 @@ function get_url_param( name ){
                 				url = rs.rows.item(i)["value"];
                 		}
                 	}
+                	
                     if (is_not_null(mandant_id) && is_not_null(url)) {
                 			loadStartPage();
                     } else {
@@ -178,27 +37,32 @@ function get_url_param( name ){
             	    systemSettings();
             	});       
             
-         	});
+         	}, sql_error);
         } else {
         	loadStartPage();
         }
+        
+        
+	 
 
  }
  
  
-     function fillSelectBox(name,where) {
+     function fillSelectBox(pos,where,callback,arrange) {
     	 
-    	 
-	
-    	 
-    	 if (typeof(where) == "undefined")
-    		 where = "";
-    	 else
-    		 where = "WHERE "+where;
+		var name = selectboxes[pos];
+
+    	 if (typeof(name)=="undefined") {
+    		 callback();
+    		 return;
+    	 }
+    	     	 
+    	 if (typeof(where) == "undefined" || where.length==0)
+    		 where = "1=1";
     	 
 		 db.transaction(function(tx) {
 
-         tx.executeSql('select distinct '+name+' from ol_ghaupt_small '+where+' order by '+name,[],function(tx,rs) {
+         tx.executeSql('select distinct '+name+' from ol_ghaupt_small WHERE '+where+' order by '+name,[],function(tx,rs) {
 
                  var select = $('#'+name); 
                  select.empty();
@@ -212,7 +76,7 @@ function get_url_param( name ){
                      	select.append('<option value="'+v+'" '+sel+' >'+v+'</option>');
                  }
                  
-                 if( where.length==0) {
+                 if(!arrange) {
                  	select.change(function(){
                 	 	if(typeof(selectGraveValues) == "undefined")
                 			 selectGraveValues = {};
@@ -225,25 +89,21 @@ function get_url_param( name ){
                 	 
                 		 if(name=="friedhof") {
                 			 fwhere = fh;
-                			 fillSelectBox("abteil",fwhere);
-                			 fillSelectBox("reihe",fwhere);
-                			 fillSelectBox("stelle",fwhere);
-                			 fillSelectBox("gtext",fwhere);
+                			 fillSelectBox(1,fwhere,function(){},true);
                 	 	 } else
                 	  	if(name=="abteil") {
                 		 	fwhere = fh+" AND "+at;
-                		 	fillSelectBox("reihe",fwhere);
-                		 	fillSelectBox("stelle",fwhere);
-                			fillSelectBox("gtext",fwhere);
+                		 	fillSelectBox(2,fwhere,function(){},true);
                 	 	 } else
                 	  	if(name=="reihe") {
                 		 	fwhere = fh+" AND "+at+" AND "+rh;
-                			 fillSelectBox("stelle",fwhere);
+                			 fillSelectBox(3,fwhere,function(){},true);
                 		  } 	  
                 	 
                 	 
                  	});
                  }
+                 fillSelectBox(pos+1,where,callback,arrange);
                  
              },sql_error);
          
@@ -252,23 +112,19 @@ function get_url_param( name ){
      }
  
      
-     function loadMenu() { 
+     
+     
+     function getPictureFileName(kindex,i) {
     	 
-    	$("#header").load("menu_header.html", function() {
-			$("#content").load("menu.html", function() {
-    		});
-    	});
-
+    	 return "images/"+kindex+"_"+i+".jpg";
      }
-     
-     
      
      
      function takePicture(kindex,i) {
     	 
     	 var error = function(e) {
     		 alert(error.code+"!!");
-    	 }
+    	 };
     	
     	  navigator.camera.getPicture(function(imageURI) {
 			   document.addEventListener("deviceready", function(){
@@ -277,11 +133,12 @@ function get_url_param( name ){
     				   		fileSystem.root.getDirectory(PATH, {create : true}, function(dataDir) {
           						var d = new Date();
           						var n = d.getTime();
-          						var filename = kindex+"-"+i+".jpg";
+          						var filename = getPictureFileName(kindex,i);
             					fileEntry.moveTo(dataDir, filename, null);
             					
             					localPath = FULLPATH+filename;
-        						$("#fotos").append("<div class='grabimage' ><img src="+localPath+random()+" /> </div>");
+        						$("#fotos").append("<div class='grabimage' ><img src="+localPath+random()+" /> </div><div class='center'><i>"+filename+"</i></div>");
+        						setCurrentPictureIndex(kindex,i+1)
 
         					},error);
     					},error);
@@ -298,68 +155,68 @@ function get_url_param( name ){
     	  return false;
      }
      
-   function iteratePictureFiles(kindex,i){
+    
+     function ifPictureExistsDo(kindex,callback, error) {
+    	var filename= getPictureFileName(kindex,1);
+ 	    var localPath = PATH+"/"+filename;
+    	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem){
+        	fileSystem.root.getFile(localPath, { create: false }, function(fileEntry) {
+        		callback(kindex);
+        	}, function(evt) {	
+        		error(kindex);
+        	});
+    	}, function(evt) {
+    		error(kindex);
+        });
+    	 
+    	 
+     }
+     
+   function iteratePictureFiles(kindex,i,append,after){
  		
-     	var filename=kindex+"-"+i+".jpg";
- 	    var localPath = PATH+"/"+filename
+     	var filename= getPictureFileName(kindex,i);
+ 	    var localPath = PATH+"/"+filename;
     	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem){
         	fileSystem.root.getFile(localPath, { create: false }, function(fileEntry) {
         		localPath = FULLPATH+filename;
-        		$("#fotos").append("<div class='grabimage' ><img src="+localPath+random()+" /> </div>");
-        		iteratePictureFiles(kindex,i+1);  
-        	}, function(evt) {				
-        		$("#takepicture").click(function() {
-                	takePicture(kindex,i);
-             	});
+        		append(localPath+random(),filename);
+        		
+        		iteratePictureFiles(kindex,i+1,append,after);  
+        	}, function(evt) {	
+        		after(kindex,i);
         	});
     	}, function(evt) {
-    			alert("fin2");
-        		$("#takepicture").click(function() {
-                	takePicture(kindex,i);
-             	});
+    		    after(kindex,i);
         	});
     	
 	}
+   
+   function setCurrentPictureIndex(kindex,i) {
+	   if (i<=1) {
+		    $("#content").append("<div id='nopictures' class='center' > Noch keine Bilder vorhanden </div>");
+	   } else {
+		   $("#nopictures").remove();
+	   }
+	    $('#takepicture').unbind('click');
+		$("#takepicture").click(function() {
+        	takePicture(kindex,i);
+		});
+   }
      
      
-      function showFotoView(kindex) {
+      function showFotoView(kindex,friedhof,abteil,reihe,stelle,gtext,gname) {
 	 
 	 	$("#header").load("foto_header.html", function() {
 		
+	 		$("#foto_title").html("<b>"+friedhof+"</b> "+abteil+"|"+reihe+"|"+stelle+" <i>"+gname+"</i>");
+	 		 
 	   		 $("#content").load("foto.html", function() {
-		   		
+
 	   			 
-	   			 iteratePictureFiles(kindex,1);
+	   			 iteratePictureFiles(kindex,1, function(src,bildname) {
+	   				 $("#fotos").append("<div class='grabimage' ><img src="+src+" /> </div> <div class='center'><i>"+bildname+"</i></div>");
+	   			 }, setCurrentPictureIndex);
 		  
-//		   		var end = 0;
-//		   		for(var i=1;i<10;i++) {
-//
-//			   		localPath = FULLPATH+kindex+"-"+i+".jpg";
-//			   		$("#fotos").append("<div class='grabimage' ><img  id='gi"+i+"' src='' /> </div>");
-//			   
-//			   		alert("i "+i);
-//					$("#gi"+i).error(function() {
-//			   			alert("Hide "+i);
-//				   		$(this).hide();
-//				   		if (end==0) {
-//							end = i;
-//							//break;
-//				   		}
-//			   		});
-//					
-//					$("#gi").attr('src',localPath+random());
-//		   		
-//		   		}
-//		   		
-//		   		alert("end "+end);
-//		   		
-//		   		$("#takepicture").click(function() {
-//			   		if (end>0) { 
-//		                	takePicture(kindex,end);
-//			   		} else {
-//				   		alert("die Maximalzahl an Bildern für dieses Grab ist erreicht");
-//			   		}
-//            	});
 
 		  
 		
@@ -369,13 +226,6 @@ function get_url_param( name ){
 	 
  }
      
-     function goBack() {
-    	 if ($("#goback").length===0) {
-    		navigator.app.exitApp();
-    	 } else {
-    	 	$("#goback").click();
-    	 }
-     }
      
      function resetMainList() {
 		 selectGraveValues = {};
@@ -383,20 +233,13 @@ function get_url_param( name ){
     	 return false;
      }
   
+ 
  function loadStartPage(){
-     
-	 
+     	  
 	  $("#header").load("main_header.html", function() {
 
         $("#content").load("main.html", function() {
-        	
-                fillSelectBox('friedhof');
-                fillSelectBox('abteil');
-                fillSelectBox('reihe');
-                fillSelectBox('stelle');
-                fillSelectBox('gtext');
-         
-            
+
              $("#mainform").submit(function() {
             	 
             	 var inputs = $('#mainform :input');
@@ -409,33 +252,15 @@ function get_url_param( name ){
         	     showGrablist(selectGraveValues);
         		 return false;
     		});
-        
+                fillSelectBox(0,'',init_mandant_values);
         });
         
 	  });
 
         
-         db.transaction(function(tx) {
-            tx.executeSql('select mvgroup, key, value from mandant_values',[],function(tx,rs) {
-                var i = 0;
-                for (i=0; i < rs.rows.length; i++) {
-                            if (rs.rows.item(i)['mvgroup'].toLowerCase()=='gmzustand') {
-                                gm_mandantvalues[rs.rows.item(i)['key']]=rs.rows.item(i)['value'];
-                            } else 
-                            if (rs.rows.item(i)['mvgroup'].toLowerCase()=='pfzustand') {
-                                pf_mandantvalues[rs.rows.item(i)['key']]=rs.rows.item(i)['value'];
-                            }  
-                            
-                }
-        
-            },sql_error);       
-            
-         });
-         
-         
-        
-        
     }
+ 
+ 
  
  function getFullName(str) {
 	 if(str=='abteil')
@@ -450,12 +275,13 @@ function get_url_param( name ){
 
  
  function showGrablist(values) {
-	  var limit = 1000;
+	 
+	  var limit = 100;
 	  var where = "1=1 ";
 	  var searchcriteria = "";
-	  
+
 	  for(key in values) {
-		 if (values[key].length) {
+		 if (values[key] && values[key].length) {
 			 if (key=="gname") {
 				 where += "AND "+key+" LIKE '%"+values[key]+"%' ";
 			 } else {
@@ -466,8 +292,9 @@ function get_url_param( name ){
 		 }
 		 
 	  }
-	  
+
 	 $("#header").load("grablist_header.html", function() {
+		 
 	  $("#content").load("grablist.html", function() {
 		
 		
@@ -485,6 +312,7 @@ function get_url_param( name ){
             	 tx.executeSql('select ol_ghaupt_small.kindex as kindex, friedhof, gtext, gname, abteil, reihe, stelle, gmzustand, pfzustand from ol_ghaupt_small left outer join ol_gmangel on (ol_ghaupt_small.kindex=ol_gmangel.kindex) where '+where+orderby+" LIMIT "+limit,[],function(tx,rs) {
             	  	var i = 0;
             	  	var inordnung = "In Ordnung";
+            	  	pictures_kindex = [];
                   	for (i=0; i < rs.rows.length; i++) {
                   		var friedhof = is_not_null(rs.rows.item(i)['friedhof']) ? rs.rows.item(i)['friedhof'] : '';
                     	var gtext = is_not_null(rs.rows.item(i)['gtext']) ? rs.rows.item(i)['gtext'] : '';
@@ -507,8 +335,14 @@ function get_url_param( name ){
                      	var content = '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block1+'</td>';
                      	content += '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block2+'</td>';
                      	content += '<td class="grabliste" onclick="showSingleGrave('+kindex+')">'+block3+'</td>';
-                     	content += "<td class='grabliste' onclick='showFotoView("+kindex+")'><img src='img/foto.png'  class='foto' /></td>";
+                     	var params = kindex+",\""+friedhof+"\",\""+abteil+"\",\""+reihe+"\",\""+stelle+"\",\""+gtext+"\",\""+gname+"\"";
+                     	content += "<td class='grabliste' onclick='showFotoView("+params+")'><img id='image_"+kindex+"' class='foto' /></td>";
                      	$('#table').append('<tr class="grabliste_row">'+content+'</tr>');
+						ifPictureExistsDo(kindex,function(kindex){
+                     		$("#image_"+kindex).attr("src","img/foto2.png");
+                     	}, function(kindex) {
+                     		$("#image_"+kindex).attr("src","img/foto.png");
+                     	});
                   	}
                   	$("#spinner").empty();
 	                 
@@ -632,129 +466,6 @@ function get_url_param( name ){
          
    }
    
-   function reset_ol_gmangel() {
-	     
-         db.transaction(function(tx) {
-        	   tx.executeSql("Update ol_gmangel set ischanged=0",[],function(txx,rs){
-				  alert("Update erfolgreich");	
-				},sql_error);
-         });
-   }
    
-   function  writeAndConfirm(zustaende,j) {
-	   if (j>=zustaende.length) {
-		   reset_ol_gmangel();
-		   return;
-	   }
-	   var zustand = zustaende[j];
-	   $.post(
-			url+"?setData=1&mandant_id="+mandant_id,
-			{ kindex : zustand[0], gmzustand : zustand[1], pfzustand : zustand[2], gmdatum : zustand[3], pfdatum : zustand[4], gmstinfo : zustand[5], zustinfo : zustand[6] },
-			function(data) {
-				alert(data);
-				writeAndConfirm(zustaende,j+1);
-			 },
-		     "text");	
-   }
-   
-   
-   
-   
-   
-   
-   function writeToServer() {
-	   
-       
-         
-         db.transaction(function(tx) {
-             
-               var zustaende = new Array();
-              
-               tx.executeSql('select kindex, gmzustand, pfzustand, gmdatum, pfdatum, gmstinfo, zustinfo from ol_gmangel where ischanged=1',[],function(tx,rs) {
-                  var i = 0;
-                  for (i=0; i < rs.rows.length; i++) {
-                	var gmdatum = is_not_null(rs.rows.item(i)['gmdatum']) ? rs.rows.item(i)['gmdatum'] : '';
-                	var pfdatum = is_not_null(rs.rows.item(i)['pfdatum']) ? rs.rows.item(i)['pfdatum'] : '';
-                    var zustand = [rs.rows.item(i)['kindex'],rs.rows.item(i)['gmzustand'],rs.rows.item(i)['pfzustand'],gmdatum,pfdatum,rs.rows.item(i)['gmstinfo'],rs.rows.item(i)['zustinfo']];
-                    zustaende.push(zustand);
-                  }
-                  
-			   writeAndConfirm(zustaende,0);
-
-         	   },sql_error);
-       
-       
-   		}); 
-         
-   }
-   
-   
-   function systemSettings() {
-	   
-	   //TODO nur für Testversion
-	   //*****
-	   
-	   if(!is_not_null(mandant_id))
-		   mandant_id = 612310;
-	   
-	   if(!is_not_null(url))
-		   url = "http://tommysql.ocw2.de/getjson.php";
-	   
-	   //*****
-	   
-	   $("#header").load("settings_header.html", function() {
-
-	   $("#content").load("settings.html", function() {
-	       
-	        $("#mandant_id").val(mandant_id);
-	        $("#url").val(url);
-            
-             $("#settings").submit(function() {
-            	 
-            	 var inputs = $('#settings :input');
-    			 var values = {};
-    		     inputs.each(function() {
-    		    	if (this.name != "submit")
-        			  values[this.name] = $(this).val();
-    			 });
-        	     saveSettings(values);
-        		 return false;
-    		});
-        
-        });
-	    });
-   }
-   
-   
-    function saveSettings(values) {
-         
-         db.transaction(function(tx) {
-             
-                tx.executeSql('CREATE TABLE IF NOT EXISTS settings (key text primary key, value text)',[],function(tx,rs){
-                    
-                    tx.executeSql('replace into settings (key,value) values ("mandant_id","'+values['mandant_id']+'")',[],function(tx,rs) {
-                        
-                          tx.executeSql('replace into settings (key,value) values ("url","'+values['url']+'")',[],function(tx,rs) {
-                              
-                        	  mandant_id = values['mandant_id'];
-                        	  url = values['url'];
-                              fillDatabase();
-                                  
-                          },sql_error);
-                                  
-                    },sql_error);
-                  
-             
-                
-                },sql_error);
-              
-               
-             
-         });
-         
-      
-         
-
-   }
 
  

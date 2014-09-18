@@ -6,6 +6,7 @@ select {
 .grablist_table {
     
     border-spacing: 0px 30px;
+    table-layout: fixed;
 }
 
 .grablist_table td {
@@ -17,6 +18,7 @@ select {
 
 .grabliste{
     width: 25%;
+    max-width: 25%;
     height: 100%;
     
     text-align:center;
@@ -71,7 +73,6 @@ table {
 }
 
 td {
-    font-family: "Comic Sans MS";
     font-size: 18px;
 }
 
@@ -99,6 +100,9 @@ input[type=text]  {
 }
 
 
+.orlando, .tombejo {
+    display: none;   
+}
 
 
 
@@ -139,6 +143,10 @@ span.floatleft {
     
 }
 
+.center {
+    text-align: center;
+}
+
 .grabimage {
     
     margin: 10px;
@@ -147,8 +155,8 @@ span.floatleft {
 
 .grabimage img {
         
-        width: 480px;
-        height: 270px;
+        max-width: 480px;
+        max-height: 480px;
 }
  
 
@@ -162,7 +170,8 @@ span.floatleft {
 
 .upright {
     position: absolute;
-    right: 0;
+    right: 5px;
+    top: 0;
    
 }
 
@@ -175,7 +184,11 @@ span.floatleft {
     margin-left: 20px;
 }
 
-
+progress {
+    margin-left: 10%;
+    margin-right: 10%;
+    width: 80%;
+}
 
 
 

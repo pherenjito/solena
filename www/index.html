@@ -6,34 +6,32 @@
      <link href="assets/css/mainstyle.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" charset="utf-8" src="cordova.js"></script>  
 <script src="lib/jquery.js"></script>
+
 <script type="text/javascript" charset="utf-8" src="SQLitePlugin.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/papaparse.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/system.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/server.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/csv.js"></script>
 <script type="text/javascript" charset="utf-8" src="js/grabliste.js"></script>
 
-<script>
-
-
-    
-
-
-
-
-    
-
-
-    $(document).ready(function () {
-        document.addEventListener("deviceready", init, false);
-        
-            document.addEventListener("backbutton", goBack, false);
-
-        
-    });
-    
-
-
-   
-</script>
 </head>
 <body>
+    
+<script>
+    //$(document).ready(function () {
+    //    try {
+            document.addEventListener("deviceready", init, false);
+            document.addEventListener("backbutton", goBack, false);
+     /*       
+        } catch(e) {
+            alert(e.message);
+            alert(e.stack);
+        }
+
+        
+    });*/
+    
+</script>
     <div id="header_container">
         <div id="header">
         </div>
